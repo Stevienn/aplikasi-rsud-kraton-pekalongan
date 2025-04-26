@@ -2,11 +2,10 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import *
+from .models import pasien, Dokter, hari_praktek, ICD, perawat, Pendaftaran, Diagnosa,schedule
 
 admin.site.register(pasien)
-admin.site.register(Dokter_umum)
-admin.site.register(Dokter_spesialis)
+admin.site.register(Dokter)
 admin.site.register(hari_praktek)
 admin.site.register(ICD)
 admin.site.register(perawat)

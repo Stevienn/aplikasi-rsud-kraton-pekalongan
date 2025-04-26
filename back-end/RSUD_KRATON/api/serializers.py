@@ -1,37 +1,29 @@
 from rest_framework import serializers
 from ..models import *
 
-class HariPraktekSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = hari_praktek
-        fields = '__all__'
-        
-class ScheduleSerializer(serializers.ModelSerializer):
-    hari_praktek_dokter = HariPraktekSerializer()
+class DokterSerializer(serializers.ModelSerializer):
     class Meta:
-        model = schedule
-        fields = '__all__'
-
-class DokterUmumSerializer(serializers.ModelSerializer):
-    schedule = ScheduleSerializer()
-    class Meta:
-        model = Dokter_umum
-        fields = '__all__'
-
-class DokterSpesialisSerializer(serializers.ModelSerializer):
-    schedule = ScheduleSerializer()
-    class Meta:
-        model = Dokter_spesialis
-        fields = '__all__'
+        model = Dokter
+        fields = ('id', 'nama_dokter')
 
 class IcdSerializer(serializers.ModelSerializer):
     class Meta:
         model = ICD
-        fields = '__all__'
-        
+        fields = ('kode', 'nama_diagnosa')
+
 class PasienSerializer(serializers.ModelSerializer):
     class Meta: 
         model = pasien
+        fields = '__all__'
+
+class HariPraktekSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = hari_praktek
+        fields = '__all__'
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = schedule
         fields = '__all__'
 
 class PerawatSerializer(serializers.ModelSerializer):
@@ -40,8 +32,6 @@ class PerawatSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PendaftaranSerializer(serializers.ModelSerializer):
-    id = PasienSerializer()
-    
     class Meta:
         model = Pendaftaran
         fields = '__all__'
