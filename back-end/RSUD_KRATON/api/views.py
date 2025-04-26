@@ -33,3 +33,23 @@ class PendaftaranViewSet(viewsets.ModelViewSet):
 class DiagnosaViewSet(viewsets.ModelViewSet):
     queryset = Diagnosa.objects.all()
     serializer_class = DiagnosaSerializer
+
+# def isi_pasien():
+#     semua_pasien = pasien.objects.all()
+#     semua_daftar = Pendaftaran.objects.all()
+    
+#     tampung_pasien = []
+    
+#     for patien in semua_pasien:
+#         #append data 
+#         tampung_pasien.append({
+#             'id_BPJS'  : pasien.ID_BPJS,
+#             'Nama pasien' : pasien.nama,
+#             'Jenis Kelamin' : pasien.jenis_kelamin,
+#             'Tanggal Lahir' : pasien.tanggal_lahir,
+#             'HP' : pasien.nomor_HP,
+#             'Keluhan' : Pendaftaran.keluhan
+#         })
+    
+#     data_pasien_instance = schedule(data_pasien=tampung_pasien)
+#     data_pasien_instance.save()
