@@ -15,14 +15,22 @@ import dummyDoctorUmum from "@/components/assets/dummyDoctorUmum";
 import { login } from "./lib";
 import { useGetDoctors } from "@/hooks/api/useDoctor";
 import { useGetUsers } from "@/hooks/api/useUser";
+import { useGetRegistration } from "@/hooks/api/useRegistration";
 
 interface ILoginPageProps {
   isAdmin?: boolean;
 }
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
-  const dataPatient = dummyPatient;
+  const { data: dataPendaftaran } = useGetRegistration();
+  console.log(dataPendaftaran);
 
+  // const dataPatient = dummyPatient;
+  const { data: dataPatient } = useGetUsers();
+  const { data: dataDoctorUmum } = useGetDoctors();
+
+  console.log(dataDoctorUmum);
+  console.log(dataPatient);
   const doctorUmum = dummyDoctorUmum;
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
