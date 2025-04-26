@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, renderActionsCell } from "@mui/x-data-grid";
 import dummyBuatTabel from "@/components/assets/dummyBuatTabel";
 import {
+  Button,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -11,6 +13,9 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import Image from "next/image";
 
 const columns = [
   {
@@ -67,13 +72,16 @@ const CustomTable = () => {
     noBPJS: item.id,
     jenisKelamin: item.gender,
     tanggalLahir: item.birthDate,
-    aksi: null,
   }));
-
-  const paginationModel = { page: 0, pageSize: 5 };
 
   return (
     <div className="bg-light-primary px-[55px] py-[40px] h-[88dvh] font-inria-sans ">
+      <div className="mb-[20px] flex justify-end">
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker onChange={(newValue) => alert("sabar bang")} />
+        </LocalizationProvider>
+      </div>
+
       <Paper
         sx={{ width: "100%", overflow: "hidden", border: 0, borderRadius: 5 }}
       >
@@ -110,7 +118,20 @@ const CustomTable = () => {
                             sx={{ paddingY: 5, paddingLeft: 5 }}
                             key={column.id}
                           >
-                            {value}
+                            {column.id === "aksi" ? (
+                              <Image
+                                src="/icons/action_icon.png"
+                                alt="icon_action"
+                                width={21}
+                                height={21}
+                                onClick={() =>
+                                  alert(`aksi page for ${row.namaPasien} `)
+                                }
+                                className="cursor-pointer"
+                              />
+                            ) : (
+                              value
+                            )}
                           </TableCell>
                         );
                       })}
@@ -121,7 +142,7 @@ const CustomTable = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
@@ -130,6 +151,7 @@ const CustomTable = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <div></div>
     </div>
   );
 };
