@@ -13,6 +13,8 @@ import { redirect, useRouter } from "next/navigation";
 import dummyPatient from "@/components/assets/dummyPatient";
 import dummyDoctorUmum from "@/components/assets/dummyDoctorUmum";
 import { login } from "./lib";
+import { useGetDoctors } from "@/hooks/api/useDoctor";
+import { useGetUsers } from "@/hooks/api/useUser";
 
 interface ILoginPageProps {
   isAdmin?: boolean;
@@ -20,6 +22,7 @@ interface ILoginPageProps {
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
   const dataPatient = dummyPatient;
+
   const doctorUmum = dummyDoctorUmum;
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
