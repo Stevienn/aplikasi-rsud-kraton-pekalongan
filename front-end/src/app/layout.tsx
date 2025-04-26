@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inria_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -28,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${interSans.variable} ${inriaSans.variable}  antialiased`}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
