@@ -2,6 +2,10 @@ from rest_framework import serializers
 from ..models import *
 
 class PasienSerializer(serializers.ModelSerializer):
+    tanggal_lahir = serializers.DateField(
+    format="%d-%m-%Y",
+    input_formats=["%d-%m-%Y"]
+)
     class Meta: 
         model = pasien
         fields = '__all__'
@@ -19,7 +23,7 @@ class PendaftaranSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ScheduleSerializer(serializers.ModelSerializer):
-    data_pendaftaran = PendaftaranSerializer()
+    data_pendaftaran = PendaftaranSerializer(many=True)
     hari_praktek_dokter = HariPraktekSerializer()
     class Meta:
         model = schedule
