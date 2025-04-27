@@ -48,7 +48,7 @@ class Dokter_spesialis(models.Model):
     nama_dokter_spc = models.CharField(max_length=50)
     password_dokter_spc = models.CharField(max_length=20)
     email_dokter_spc = models.CharField(max_length=15)
-    spesialization : models.CharField(max_length=20)
+    spesialization = models.CharField(max_length=20)
     image_dokter_spc = models.CharField(max_length=20)
     schedule_dokter_spc = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_spc_set')
     
