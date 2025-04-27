@@ -6,6 +6,10 @@ class DokterViewSet(viewsets.ModelViewSet):
     queryset = Dokter.objects.all()
     serializer_class = DokterSerializer
 
+class DokterSpesialisViewSet(viewsets.ModelViewSet):
+    queryset = Dokter_spesialis.objects.all()
+    serializer_class = DokterSpesialisSerializer
+
 class IcdViewSet(viewsets.ModelViewSet):
     queryset = ICD.objects.all()
     serializer_class = IcdSerializer

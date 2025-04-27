@@ -19,36 +19,46 @@ class hari_praktek(models.Model):
     def __str__(self):
         return (f'Hari : {self.hari}, Sesi Praktek : {self.sesi_praktek}')
     
+class Pendaftaran(models.Model):
+    #id_pendaftaran = models.IntegerField()
+    data_pasien = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='id_bpjs_set')
+    tanggal_konsultasi = models.DateField()
+    keluhan = models.CharField(max_length=100)
+    nama_dokter = models.CharField(max_length=50)
+    sesi_praktek_dokter = models.CharField(max_length=50)
+    
+class schedule(models.Model):
+    #schedule_id = models.IntegerField()
+    #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
+    hari_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_praktek_dokter_set')
+    jam_total = models.IntegerField()
+    data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='data_pendaftaran_set')
+    
 class Dokter(models.Model):
     id_dokter = models.IntegerField()
     nama_dokter = models.CharField(max_length=50)
     password_dokter = models.CharField(max_length=20)
     email_dokter = models.CharField(max_length=15)
+    #image_dokter = models.CharField(max_length=20)
+    schedule_dokter = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_set')
     
     def __str__(self):
         return (f"Id Dokter : {self.id_dokter}, Nama Dokter : {self.nama_dokter}")
 
-class schedule(models.Model):
-    #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
-    hari_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_praktek_dokter_set')
-    jam_total = models.IntegerField()
-    data_pasien = models.JSONField(default=list)
+class Dokter_spesialis(models.Model):
+    id_dokter_spc = models.IntegerField()
+    nama_dokter_spc = models.CharField(max_length=50)
+    password_dokter_spc = models.CharField(max_length=20)
+    email_dokter_spc = models.CharField(max_length=15)
+    spesialization : models.CharField(max_length=20)
+    #image_dokter_spc = models.CharField(max_length=20)
+    schedule_dokter_spc = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_spc_set')
     
     def __str__(self):
-        return (f'Id: {self.id_dokter}, Hari:{self.hari_praktek_dokter}')
-    
-class Pendaftaran(models.Model):
-    id_pendaftaran = models.IntegerField()
-    id_bpjs = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='id_bpjs_set')
-    nama_pasien = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='nama_pasien_set')
-    tanggal_konsultasi = models.DateField()
-    keluhan = models.CharField(max_length=100)
-    nama_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='nama_dokter_set')
-    hari_konsul_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_konsul_dokter_set')
-    sesi_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='sesi_praktek_dokter_set')
+        return (f"Id Dokter : {self.id_dokter}, Nama Dokter : {self.nama_dokter}")
     
 class perawat(models.Model):
-    id_perawat = models.IntegerField()
+    #id_perawat = models.IntegerField()
     nama_perawat = models.CharField(max_length=50)
     password_perawat = models.CharField(max_length=20)
     email_perawat = models.CharField(max_length=15)
@@ -61,11 +71,8 @@ class ICD(models.Model):
         return (f'id : {self.id}, Kode : {self.kode}, Diagnosa : {self.nama_diagnosa}')
 
 class Diagnosa(models.Model):
-    id_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='is_pendaftaran_set')
-    nama_pasien = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='nama_pasien_set')
-    penyakit_pasien = models.CharField(max_length=100)
-    kode_icd = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='kode_icd_set')
-    diagnosa_icd = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_set')
-    
-    def __str__(self):
-        return (f'Id Pendaftaran: {self.id_pendaftaran}, Pasien : {self.nama_pasien}, Penyakit Pasien: {self.penyakit_pasien}, Diagnosa: {self.kode_icd} -> {self.diagnosa_icd}')
+    data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='is_pendaftaran_set')
+    diagnosa_subjektif = models.CharField(max_length=100)
+    diagnosa_icd_1 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_1_set')
+    diagnosa_icd_2 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_2_set')    
+        
