@@ -32,26 +32,24 @@ class schedule(models.Model):
     #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
     hari_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_praktek_dokter_set')
     jam_total = models.IntegerField()
-    data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='data_pendaftaran_set')
+    data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True)
     
 class Dokter(models.Model):
-    id_dokter = models.IntegerField()
     nama_dokter = models.CharField(max_length=50)
     password_dokter = models.CharField(max_length=20)
     email_dokter = models.CharField(max_length=15)
-    #image_dokter = models.CharField(max_length=20)
+    image_dokter = models.CharField(max_length=20)
     schedule_dokter = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_set')
     
     def __str__(self):
         return (f"Id Dokter : {self.id_dokter}, Nama Dokter : {self.nama_dokter}")
 
 class Dokter_spesialis(models.Model):
-    id_dokter_spc = models.IntegerField()
     nama_dokter_spc = models.CharField(max_length=50)
     password_dokter_spc = models.CharField(max_length=20)
     email_dokter_spc = models.CharField(max_length=15)
     spesialization : models.CharField(max_length=20)
-    #image_dokter_spc = models.CharField(max_length=20)
+    image_dokter_spc = models.CharField(max_length=20)
     schedule_dokter_spc = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_spc_set')
     
     def __str__(self):
