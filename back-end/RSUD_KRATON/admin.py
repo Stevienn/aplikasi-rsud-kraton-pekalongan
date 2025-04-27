@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import *
 
 admin.site.register(pasien)
-admin.site.register(Dokter_umum)
+admin.site.register(Dokter)
 admin.site.register(Dokter_spesialis)
 admin.site.register(hari_praktek)
 admin.site.register(ICD)

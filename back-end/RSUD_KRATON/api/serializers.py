@@ -1,25 +1,38 @@
 from rest_framework import serializers
 from ..models import *
 
+class PasienSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = pasien
+        fields = '__all__'
+
 class HariPraktekSerializer(serializers.ModelSerializer):
     class Meta: 
         model = hari_praktek
         fields = '__all__'
-        
+
+class PendaftaranSerializer(serializers.ModelSerializer):
+    data_pasien = PasienSerializer()
+    #sesi_praktek_dokter = HariPraktekSerializer()
+    class Meta:
+        model = Pendaftaran
+        fields = '__all__'
+
 class ScheduleSerializer(serializers.ModelSerializer):
+    data_pendaftaran = PendaftaranSerializer()
     hari_praktek_dokter = HariPraktekSerializer()
     class Meta:
         model = schedule
         fields = '__all__'
 
-class DokterUmumSerializer(serializers.ModelSerializer):
-    schedule = ScheduleSerializer()
+class DokterSerializer(serializers.ModelSerializer):
+    schedule_dokter = ScheduleSerializer()
     class Meta:
-        model = Dokter_umum
+        model = Dokter
         fields = '__all__'
 
 class DokterSpesialisSerializer(serializers.ModelSerializer):
-    schedule = ScheduleSerializer()
+    schedule_dokter_spc = ScheduleSerializer()
     class Meta:
         model = Dokter_spesialis
         fields = '__all__'
@@ -28,25 +41,17 @@ class IcdSerializer(serializers.ModelSerializer):
     class Meta:
         model = ICD
         fields = '__all__'
-        
-class PasienSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = pasien
-        fields = '__all__'
 
 class PerawatSerializer(serializers.ModelSerializer):
     class Meta:
         model = perawat
         fields = '__all__'
 
-class PendaftaranSerializer(serializers.ModelSerializer):
-    id = PasienSerializer()
-    
-    class Meta:
-        model = Pendaftaran
-        fields = '__all__'
-
 class DiagnosaSerializer(serializers.ModelSerializer):
+    data_pendaftaran = PendaftaranSerializer()
+    diagnosa_icd_1 = IcdSerializer()
+    diagnosa_icd_2 = IcdSerializer()
+    
     class Meta:
         model = Diagnosa
         fields = '__all__'
