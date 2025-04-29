@@ -27,13 +27,12 @@ export async function login({ userData, isDokter }: any) {
   //1. GetUser
   if (!isDokter) {
     const user = {
-      id: userData.id,
+      ID_BPJS: userData.ID_BPJS,
       nama: userData.nama,
-      gender: userData.gender,
-      birth: userData.birth,
-      phone: userData.phone,
-      email: userData.email,
-      noUrut: userData.noUrut,
+      jenis_kelamin: userData.jenis_kelamin,
+      tanggal_lahir: userData.tanggal_lahir,
+      nomor_HP: userData.nomor_HP,
+      email_pasien: userData.email_pasien,
     };
     await createSession({ user: user, isDokter: false });
   } else {

@@ -7,8 +7,8 @@ import { getUser } from "@/api/user";
 import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import IUser from "@/interface/patientInterface";
 import React, { useEffect, useState } from "react";
+import { IUser } from "@/interface/patientInterface";
 
 const PilihDokter = () => {
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -21,6 +21,8 @@ const PilihDokter = () => {
     };
     fetchUserData();
   }, []);
+
+  console.log("userData", userData);
 
   return (
     <div className="font-inria-sans pb-[130px]">
