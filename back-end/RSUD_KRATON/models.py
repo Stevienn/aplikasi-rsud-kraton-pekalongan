@@ -37,6 +37,9 @@ class schedule(models.Model):
     jam_total = models.IntegerField()
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True)
     
+    def __str__(self):
+        return (f'Total Jam Praktek : {self.jam_total}') 
+    
 class Dokter(models.Model):
     nama_dokter = models.CharField(max_length=50)
     password_dokter = models.CharField(max_length=20)
