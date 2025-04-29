@@ -4,6 +4,7 @@ from .views import *
 router = routers.DefaultRouter()
 
 router.register(r'Dokter', DokterViewSet)
+router.register(r'DokterSpesialis', DokterSpesialisViewSet)
 router.register(r'ICD', IcdViewSet)
 router.register(r'Pasien', PasienViewSet)
 router.register(r'HariPraktek', HariPraktekViewSet)
