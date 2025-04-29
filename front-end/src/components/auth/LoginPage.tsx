@@ -22,15 +22,10 @@ interface ILoginPageProps {
 }
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
-  const { data: dataPendaftaran } = useGetRegistration();
-  console.log(dataPendaftaran);
-
   // const dataPatient = dummyPatient;
   const { data: dataPatient } = useGetUsers();
   const { data: dataDoctorUmum } = useGetDoctors();
 
-  console.log(dataDoctorUmum);
-  console.log(dataPatient);
   const doctorUmum = dummyDoctorUmum;
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
@@ -41,14 +36,17 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
     setIsWarningInput("");
     setIsWarningValidate("");
 
-    const patientData = dataPatient.find((data) => input == data.id);
+    const patientData = dataPatient.find((data) => input == data.ID_BPJS);
 
     if (!patientData) {
       setIsWarningInput("No BPJS belum terdaftar !");
     } else {
-      if (input == patientData.id && validate == patientData.nama) {
+      if (input == patientData.ID_BPJS && validate == patientData.nama) {
         await login({ userData: patientData, isDokter: false });
-      } else if (input == patientData.id && validate !== patientData.nama) {
+      } else if (
+        input == patientData.ID_BPJS &&
+        validate !== patientData.nama
+      ) {
         setIsWarningValidate("Nama yang anda masukkan tidak sesuai");
       }
     }

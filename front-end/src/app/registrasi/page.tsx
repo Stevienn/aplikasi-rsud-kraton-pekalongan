@@ -5,16 +5,15 @@ import FormLayout from "@/components/form/FormLayout";
 import InputField from "@/components/form/InputField";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
 import React, { useState } from "react";
 import { redirect } from "next/navigation";
 
-import dummyPatient from "@/components/assets/dummyPatient";
 import Modal from "@/components/Modal";
+import { useCreateUser, useGetUsers } from "@/hooks/api/useUser";
 
 interface IValidationProps {
   name: string;
-  bpjs: number;
+  bpjs: string;
   email: string;
   phone: string;
   birth: string;
@@ -22,10 +21,11 @@ interface IValidationProps {
 }
 
 const Registrasi = () => {
-  const [dataPatient, setDataPatient] = useState(dummyPatient);
+  const { data: dataPatient } = useGetUsers();
+  const createUser = useCreateUser();
 
   const [name, setName] = useState("");
-  const [bpjs, setBpjs] = useState<number>();
+  const [bpjs, setBpjs] = useState("");
   const [gender, setGender] = useState("");
   const [birth, setBirth] = useState("");
   const [phone, setPhone] = useState("");
@@ -46,9 +46,13 @@ const Registrasi = () => {
     setIsWarningEmail("");
     setIsWarningPhone("");
 
-    const isRegistered = dataPatient.find((data) => bpjs == data.id);
-    const isEmailRegistered = dataPatient.find((data) => email === data.email);
-    const isPhoneRegistered = dataPatient.find((data) => phone === data.phone);
+    const isRegistered = dataPatient.find((data) => bpjs == data.ID_BPJS);
+    const isEmailRegistered = dataPatient.find(
+      (data) => email === data.email_pasien
+    );
+    const isPhoneRegistered = dataPatient.find(
+      (data) => phone === data.nomor_HP
+    );
 
     if (isRegistered) {
       setIsWarningBpjs("No BPJS sudah terdaftar, silahkan melakukan login !");
@@ -66,7 +70,6 @@ const Registrasi = () => {
     }
     if (!isRegistered && !isEmailRegistered && !isPhoneRegistered) {
       setIsModalConfirm(true);
-      console.log(dummyPatient);
     }
   };
 
@@ -80,17 +83,21 @@ const Registrasi = () => {
   }: IValidationProps) => {
     const birthDate = birth.format("DD-MM-YYYY");
     const newPatient = {
-      id: bpjs,
+      ID_BPJS: bpjs,
       nama: name,
-      gender: gender,
-      birth: birthDate,
-      phone: phone,
-      email: email,
+      jenis_kelamin: gender,
+      tanggal_lahir: birthDate,
+      nomor_HP: phone,
+      email_pasien: email,
     };
-    dummyPatient.push(newPatient);
-    setIsModalLogin(true);
-
-    console.log(dummyPatient);
+    createUser.mutate(newPatient, {
+      onSuccess: () => {
+        setIsModalLogin(true);
+      },
+      onError: (error) => {
+        console.error("Gagal menambahkan pasien:", error);
+      },
+    });
   };
 
   return (
@@ -189,7 +196,7 @@ const Registrasi = () => {
             type="text"
             placeholder="ex: Putri Aviarta"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -201,7 +208,7 @@ const Registrasi = () => {
             customClass="mb-[10px]"
             inputWidth="w-[900px]"
             value={bpjs}
-            onChange={(e) => setBpjs(parseInt(e.target.value))}
+            onChange={(e) => setBpjs(e.target.value)}
             isWarning={isWarningBpjs}
           />
           {/* Jenis Kelamin */}

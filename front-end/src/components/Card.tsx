@@ -10,7 +10,7 @@ import _ from "lodash";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import IDiagnosa from "@/interface/diagnosaInterface";
+import IDiagnosa from "@/interface/pendaftaranInterface";
 import { redirect } from "next/navigation";
 
 interface ICardProps {
@@ -39,8 +39,6 @@ const Card = ({
 
   const today = dayjs();
   const disabledDate = today.add(7, "day");
-
-  console.log(diagnosa);
 
   const handleRegistration = () => {
     const currentDiagnosa = diagnosa.find((data) => bpjsId == data.bpjsId);

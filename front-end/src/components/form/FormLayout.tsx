@@ -14,7 +14,7 @@ const FormLayout = ({ title, children }: IFormLayoutProps) => {
           RSUD Kraton Pekalongan
         </h2>
       </div>
-      <div className="font-inter-sans bg-white rounded-[40px] mx-[400px] shadow-2xl flex flex-col justify-center items-center px-[100px] pt-[40px] pb-[30px]">
+      <div className="font-inter-sans bg-white rounded-[40px] max-w-[900px] w-full mx-auto shadow-2xl flex flex-col justify-center items-center px-[550px] pt-[40px] pb-[30px]">
         {children}
       </div>
     </div>
