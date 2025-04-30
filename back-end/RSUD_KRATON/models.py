@@ -33,7 +33,7 @@ class Pendaftaran(models.Model):
 class schedule(models.Model):
     #schedule_id = models.IntegerField()
     #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
-    hari_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_praktek_dokter_set')
+    hari_praktek_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
     jam_total = models.IntegerField()
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True)
     

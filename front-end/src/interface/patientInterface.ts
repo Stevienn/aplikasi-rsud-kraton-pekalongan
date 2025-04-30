@@ -1,12 +1,14 @@
 interface IUser {
-  user: {
-    id: number;
-    nama: string;
-    gender: string;
-    birth: string;
-    phone: string;
-    email: string;
-  };
+  ID_BPJS: string;
+  nama: string;
+  jenis_kelamin: string;
+  tanggal_lahir: string;
+  nomor_HP: string;
+  email_pasien: string;
 }
 
-export default IUser;
+interface IUserData {
+  user: IUser;
+}
+
+export type { IUser, IUserData };

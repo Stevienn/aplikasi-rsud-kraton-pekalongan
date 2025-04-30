@@ -1,3 +1,4 @@
+import { IUser } from "@/interface/patientInterface";
 import axios from "@/lib/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -12,9 +13,9 @@ export const useGetUsers = () => {
 };
 
 export const useCreateUser = () => {
-  return useMutation({
+  return useMutation<void, Error, IUser>({
     mutationFn: async (newUser) => {
-      const response = await axios.post("/Pasien", newUser);
+      const response = await axios.post("/Pasien/", newUser);
       return response.data;
     },
   });
