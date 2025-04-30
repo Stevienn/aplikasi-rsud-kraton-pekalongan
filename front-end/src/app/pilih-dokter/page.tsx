@@ -8,11 +8,12 @@ import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
-import { IUser } from "@/interface/patientInterface";
+import { IUserData } from "@/interface/patientInterface";
+import { useGetDoctors } from "@/hooks/api/useDoctor";
 
 const PilihDokter = () => {
-  const [userData, setUserData] = useState<IUser | null>(null);
-  const [doctorUmum, setDoctorUmum] = useState(dummyDoctorUmum);
+  const [userData, setUserData] = useState<IUserData | null>(null);
+  const { data: doctorUmum } = useGetDoctors();
   const [doctorSpesialis, setDoctorSpesialis] = useState(dummyDoctorSpesialis);
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,8 +22,6 @@ const PilihDokter = () => {
     };
     fetchUserData();
   }, []);
-
-  console.log("userData", userData);
 
   return (
     <div className="font-inria-sans pb-[130px]">
