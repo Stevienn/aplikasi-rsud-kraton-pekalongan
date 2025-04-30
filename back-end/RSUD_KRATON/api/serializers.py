@@ -25,7 +25,7 @@ class PendaftaranSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     data_pendaftaran = PendaftaranSerializer(many=True)
-    hari_praktek_dokter = HariPraktekSerializer()
+    hari_praktek_dokter = HariPraktekSerializer(many=True)
     class Meta:
         model = schedule
         fields = '__all__'
