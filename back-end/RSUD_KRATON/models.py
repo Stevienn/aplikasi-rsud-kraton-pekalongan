@@ -13,7 +13,7 @@ class pasien(models.Model):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
 
 class hari_praktek(models.Model):
-    hari = models.JSONField(default=list)
+    hari = models.CharField(max_length=50)
     sesi_praktek = models.JSONField(default=list)
 
     def __str__(self):
@@ -33,7 +33,7 @@ class Pendaftaran(models.Model):
 class schedule(models.Model):
     #schedule_id = models.IntegerField()
     #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
-    hari_praktek_dokter = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name='hari_praktek_dokter_set')
+    hari_praktek_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
     jam_total = models.IntegerField()
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True)
     
