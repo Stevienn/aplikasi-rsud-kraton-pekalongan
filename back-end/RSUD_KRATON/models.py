@@ -13,7 +13,7 @@ class pasien(models.Model):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
 
 class hari_praktek(models.Model):
-    hari = models.JSONField(default=list)
+    hari = models.CharField(max_length=50)
     sesi_praktek = models.JSONField(default=list)
 
     def __str__(self):
