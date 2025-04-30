@@ -15,13 +15,16 @@ import dummyDoctorUmum from "@/components/assets/dummyDoctorUmum";
 import { login } from "./lib";
 import { useGetDoctors } from "@/hooks/api/useDoctor";
 import { useGetUsers } from "@/hooks/api/useUser";
+import { useGetRegistration } from "@/hooks/api/useRegistration";
 
 interface ILoginPageProps {
   isAdmin?: boolean;
 }
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
-  const dataPatient = dummyPatient;
+  // const dataPatient = dummyPatient;
+  const { data: dataPatient } = useGetUsers();
+  const { data: dataDoctorUmum } = useGetDoctors();
 
   const doctorUmum = dummyDoctorUmum;
   const [input, setInput] = useState("");
@@ -33,14 +36,17 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
     setIsWarningInput("");
     setIsWarningValidate("");
 
-    const patientData = dataPatient.find((data) => input == data.id);
+    const patientData = dataPatient.find((data) => input == data.ID_BPJS);
 
     if (!patientData) {
       setIsWarningInput("No BPJS belum terdaftar !");
     } else {
-      if (input == patientData.id && validate == patientData.nama) {
+      if (input == patientData.ID_BPJS && validate == patientData.nama) {
         await login({ userData: patientData, isDokter: false });
-      } else if (input == patientData.id && validate !== patientData.nama) {
+      } else if (
+        input == patientData.ID_BPJS &&
+        validate !== patientData.nama
+      ) {
         setIsWarningValidate("Nama yang anda masukkan tidak sesuai");
       }
     }

@@ -17,7 +17,8 @@ class HariPraktekSerializer(serializers.ModelSerializer):
 
 class PendaftaranSerializer(serializers.ModelSerializer):
     data_pasien = PasienSerializer()
-    #sesi_praktek_dokter = HariPraktekSerializer()
+    #sesi_praktek_dokter = Ha
+    # riPraktekSerializer()
     class Meta:
         model = Pendaftaran
         fields = '__all__'
