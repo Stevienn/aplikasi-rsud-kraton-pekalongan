@@ -15,9 +15,10 @@ class pasien(models.Model):
 class hari_praktek(models.Model):
     hari = models.CharField(max_length=50)
     sesi_praktek = models.JSONField(default=list)
+    jam_total = models.IntegerField()
 
     def __str__(self):
-        return (f"Hari : {self.hari}, Sesi : {self.sesi_praktek}")
+        return (f"Hari : {self.hari}, Sesi : {self.sesi_praktek}, Total Jam :  {self.jam_total}")
     
 class Pendaftaran(models.Model):
     #id_pendaftaran = models.IntegerField()
@@ -34,11 +35,7 @@ class schedule(models.Model):
     #schedule_id = models.IntegerField()
     #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
     hari_praktek_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
-    jam_total = models.IntegerField()
-    data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True)
-    
-    def __str__(self):
-        return (f'Total Jam Praktek : {self.jam_total}') 
+    data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True) 
     
 class Dokter(models.Model):
     nama_dokter = models.CharField(max_length=50)
