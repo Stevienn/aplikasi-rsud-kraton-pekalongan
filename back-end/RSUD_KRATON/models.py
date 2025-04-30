@@ -45,7 +45,7 @@ class Dokter(models.Model):
     schedule_dokter = models.ForeignKey(schedule, on_delete=models.CASCADE, related_name='schedule_dokter_set')
     
     def __str__(self):
-        return (f"Id Dokter : {self.id_dokter}, Nama Dokter : {self.nama_dokter}")
+        return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}")
 
 class Dokter_spesialis(models.Model):
     nama_dokter_spc = models.CharField(max_length=50)
