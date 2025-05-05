@@ -1,93 +1,115 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import Button from "./form/Button";
-import { ISchedule } from "@/interface/doctorInterface";
+import { IDoctor } from "@/interface/doctorInterface";
 import Modal from "./Modal";
-
-import dummyDiagnosa from "@/components/assets/dummyDiagnosa";
 
 import _ from "lodash";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import IDiagnosa from "@/interface/pendaftaranInterface";
+import "dayjs/locale/id";
 import { redirect } from "next/navigation";
+import { FormControl, MenuItem, Select } from "@mui/material";
+import { useCreateRegistration } from "@/hooks/api/useRegistration";
+import { IUserData } from "@/interface/patientInterface";
+import { getTempRegistration } from "./assets/tempRegistration";
 
 interface ICardProps {
-  image: string;
+  doctorData: IDoctor;
   categories: string;
-  name: string;
-  schedule: {
-    [key: string]: ISchedule;
-  };
   customCategoryClass: string;
-  bpjsId: number | undefined;
+  userData: IUserData;
 }
 
 const Card = ({
-  image,
+  userData,
+  doctorData,
   categories,
-  name,
-  schedule,
   customCategoryClass,
-  bpjsId,
 }: ICardProps) => {
+  dayjs.locale("id");
   const [modalSchedule, setModalSchedule] = useState(false);
   const [modalRegistration, setModalRegistration] = useState(false);
   const [date, setDate] = useState("");
-  const [diagnosa, setDiagnosa] = useState<IDiagnosa[]>(dummyDiagnosa);
+  const [dayName, setDayName] = useState("");
+  const [selectedSession, setSelectedSession] = useState("");
+  const keluhan = getTempRegistration();
+
+  console.log(keluhan);
+
+  const createRegis = useCreateRegistration();
 
   const today = dayjs();
   const disabledDate = today.add(7, "day");
 
   const handleRegistration = () => {
-    const currentDiagnosa = diagnosa.find((data) => bpjsId == data.bpjsId);
-
-    if (currentDiagnosa) {
-      const updateDiagnosa = {
-        ...currentDiagnosa,
-        diagnosaDate: date.format("DD-MM-YYYY"),
-        keluhan: currentDiagnosa.keluhan,
-        doctorName: name,
-        subjectiveDiagnosa: currentDiagnosa.subjectiveDiagnosa, // Keep existing or update
-        primaryDiagnose: currentDiagnosa.primaryDiagnose, // Keep existing or update
-        secondaryDiagnose: currentDiagnosa.secondaryDiagnose,
-      };
-      const updatedDiagnosa = diagnosa.map((data) =>
-        data.bpjsId === bpjsId ? updateDiagnosa : data
-      );
-      // UPDATE DIAGNOSA USING METHOD PUT OR POST OR PATCH IDONT KNOW
-      setDiagnosa(updatedDiagnosa);
-      console.log(diagnosa);
-      redirect("/konfirmasi");
+    if (selectedSession == "") {
+      alert("Mohon pilih sesi terlebih dahulu");
     } else {
-      alert("unknown error");
+      const regisDate = date.format("YYYY-MM-DD");
+      const newRegis = {
+        data_pasien: userData.user.ID_BPJS,
+        tanggal_konsultasi: regisDate,
+        keluhan: keluhan,
+        nama_dokter: doctorData.nama_dokter,
+        sesi_praktek_dokter: selectedSession,
+      };
+      createRegis.mutate(newRegis, {
+        onSuccess: () => {
+          redirect("/konfirmasi");
+        },
+        onError: (error) => {
+          console.error("Gagal menambahkan pendaftaran:", error);
+        },
+      });
     }
   };
 
   const ScheduleDisplay = ({ schedule }: any) => {
     return (
       <div className="mt-[-20px]">
-        {/* Change the object into array and map it*/}
-        {Object.entries(schedule).map(([day, details]) => (
-          <div key={day}>
-            <p className="font-semibold mt-[20px]">{_.capitalize(day)} :</p>
-            {Object.entries(details).map(([key, time]) => {
-              if (
-                time &&
-                !key.startsWith("total_jam") &&
-                !key.startsWith("pasien") //Ignore the total jam and pasien properties
-              ) {
-                return (
-                  <p key={key} className="underline">
-                    {time}
-                  </p>
-                );
-              }
-              return null;
-            })}
-          </div>
+        {schedule?.map((schedule, index) => (
+          <>
+            <div key={index} className="mt-[10px]">
+              <p className="font-semibold underline">{schedule.hari}</p>
+            </div>
+            {schedule.sesi_praktek.map((sesi_praktek, index) => (
+              <div key={index} className="flex gap-[5px]">
+                <p className="font-semibold">Sesi {index + 1} : </p>
+                <p>{sesi_praktek}</p>
+              </div>
+            ))}
+          </>
         ))}
+      </div>
+    );
+  };
+
+  const SessionComponent = ({ session }) => {
+    const getSession = session.find((data) => dayName == data.hari);
+
+    return (
+      <div>
+        <p className="text-blue-primary font-semibold mb-[10px]">Pilih Sesi</p>
+        <FormControl fullWidth>
+          <Select
+            value={selectedSession}
+            onChange={(event) => setSelectedSession(event?.target.value)}
+          >
+            {getSession?.sesi_praktek?.length > 0 ? (
+              getSession.sesi_praktek.map((sessionData) => (
+                <MenuItem key={sessionData} value={sessionData}>
+                  {sessionData}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled value="">
+                Tidak ada sesi tersedia
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
       </div>
     );
   };
@@ -96,9 +118,12 @@ const Card = ({
     <div id="shared-modal">
       {modalSchedule && (
         <Modal width="w-[500px]">
-          <Modal.Header title={`Jadwal Praktek ${name}`} />
+          <Modal.Header title={`Jadwal Praktek ${doctorData.nama_dokter}`} />
           <Modal.Body>
-            <ScheduleDisplay schedule={schedule} />
+            <ScheduleDisplay
+              schedule={doctorData.schedule_dokter.hari_praktek_dokter}
+            />
+            <></>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -110,31 +135,49 @@ const Card = ({
       )}
       {modalRegistration && (
         <Modal width="w-[500px]">
-          <Modal.Header title={name} />
+          <Modal.Header title={doctorData.nama_dokter} />
           <Modal.Body>
             <>
-              <p className="text-blue-primary font-semibold mb-[10px]">
-                Pilih Tanggal
-              </p>
-              <div className="mb-[6px]">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    sx={{ width: "100%" }}
-                    minDate={today}
-                    maxDate={disabledDate}
-                    onChange={(newValue) => setDate(newValue)}
-                  />
-                </LocalizationProvider>
+              <div>
+                <p className="text-blue-primary font-semibold mb-[10px]">
+                  Pilih Tanggal
+                </p>
+                <div className="mb-[6px]">
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="id"
+                  >
+                    <DatePicker
+                      sx={{ width: "100%" }}
+                      minDate={today}
+                      maxDate={disabledDate}
+                      onChange={(newValue) => {
+                        setDate(newValue);
+                        if (newValue) {
+                          setDayName(newValue.format("dddd"));
+                        }
+                      }}
+                    />
+                  </LocalizationProvider>
+                </div>
+                <p className="italic text-red-500 text-[13px] mb-[20px]">
+                  *Reservasi maksimal 1 minggu ke depan dari tanggal pendaftaran
+                </p>
               </div>
-              <p className="italic text-red-500 text-[13px] mb-[85px]">
-                *Reservasi maksimal 1 minggu ke depan dari tanggal pendaftaran
-              </p>
+              <div>
+                <SessionComponent
+                  session={doctorData.schedule_dokter.hari_praktek_dokter}
+                />
+              </div>
             </>
           </Modal.Body>
           <Modal.Footer>
             <Button
               placeholder="Kembali"
-              onClick={() => setModalRegistration(false)}
+              onClick={() => {
+                setModalRegistration(false);
+                setDayName("");
+              }}
               isCancel
               customClass="text-[14px] px-[13px] py-[10px]"
             />
@@ -148,7 +191,12 @@ const Card = ({
       )}
       <div className="shadow-2xl w-[300px] rounded-[40px] font-inria-sans">
         <div className="overflow-hidden rounded-tl-[40px] rounded-tr-[40px] max-h-[180px]">
-          <Image src={image} alt="doctor" width={300} height={195} />
+          <Image
+            src={doctorData?.image_dokter}
+            alt="doctor"
+            width={300}
+            height={195}
+          />
         </div>
         <div className="px-[33px] py-[25px]">
           <p
@@ -156,7 +204,9 @@ const Card = ({
           >
             {categories}
           </p>
-          <p className="text-[20px] font-bold mb-[5px]">{name}</p>
+          <p className="text-[20px] font-bold mb-[5px]">
+            {doctorData?.nama_dokter}
+          </p>
           <p
             className="underline text-blue-primary font-semibold cursor-pointer mb-[80px]"
             onClick={() => setModalSchedule(true)}

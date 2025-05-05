@@ -41,7 +41,7 @@ const Registrasi = () => {
     setGender(event.target.value);
   };
 
-  const handleValidation = ({ bpjs, email, phone }: IValidationProps) => {
+  const handleValidation = () => {
     setIsWarningBpjs("");
     setIsWarningEmail("");
     setIsWarningPhone("");
@@ -73,14 +73,7 @@ const Registrasi = () => {
     }
   };
 
-  const handleSubmit = ({
-    name,
-    bpjs,
-    email,
-    phone,
-    birth,
-    gender,
-  }: IValidationProps) => {
+  const handleSubmit = () => {
     const birthDate = birth.format("DD-MM-YYYY");
     const newPatient = {
       ID_BPJS: bpjs,
@@ -179,12 +172,7 @@ const Registrasi = () => {
               placeholder="Kembali"
               onClick={() => setIsModalConfirm(false)}
             />
-            <Button
-              placeholder="Daftar"
-              onClick={() =>
-                handleSubmit({ name, bpjs, email, phone, birth, gender })
-              }
-            />
+            <Button placeholder="Daftar" onClick={() => handleSubmit()} />
           </Modal.Footer>
         </Modal>
       )}
@@ -271,12 +259,7 @@ const Registrasi = () => {
               placeholder="Kembali"
               onClick={() => redirect("/")}
             />
-            <Button
-              placeholder="Daftar"
-              onClick={() =>
-                handleValidation({ name, bpjs, email, phone, birth, gender })
-              }
-            />
+            <Button placeholder="Daftar" onClick={() => handleValidation()} />
           </div>
         </div>
       </FormLayout>
