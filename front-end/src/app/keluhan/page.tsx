@@ -34,10 +34,16 @@ const Keluhan = () => {
   };
 
   const handleRegistration = () => {
+    if (!keluhan.trim()) {
+      alert("Keluhan tidak boleh kosong");
+      return;
+    }
     if (already === "Sudah") {
       if (userData?.user.ID_BPJS) {
+        const validKeluhan =
+          typeof keluhan === "string" ? keluhan : String(keluhan);
         const newRegistrasi = {
-          keluhan: keluhan,
+          keluhan: validKeluhan,
         };
         addToTempRegistration(newRegistrasi);
         redirect("/pilih-dokter");
