@@ -34,10 +34,16 @@ class PendaftaranSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     data_pendaftaran = PendaftaranSerializer(many=True)
+    data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
     hari_praktek_dokter = HariPraktekSerializer(many=True)
     class Meta:
         model = schedule
-        fields = '__all__'
+        fields = [
+            'id',
+            'data_pendaftaran',
+            'data_pendaftaran_ids',
+            'hari_praktek_dokter',
+        ]
 
 class DokterSerializer(serializers.ModelSerializer):
     schedule_dokter = ScheduleSerializer()
