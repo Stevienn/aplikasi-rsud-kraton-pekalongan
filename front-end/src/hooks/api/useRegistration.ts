@@ -12,6 +12,19 @@ export const useGetRegistration = () => {
   });
 };
 
+export const useGetRegistrationById = (id) => {
+  return useQuery({
+    queryKey: ["registration", "bpjs", id],
+    queryFn: async () => {
+      const response = await axios.get("/Pendaftaran/");
+      const allData = response.data;
+
+      return allData.find((item) => item.data_pasien.ID_BPJS === id); // return 1 object
+    },
+    enabled: !!id,
+  });
+};
+
 export const useCreateRegistration = () => {
   return useMutation<void, Error, IPendaftaran>({
     mutationFn: async (newRegistration) => {

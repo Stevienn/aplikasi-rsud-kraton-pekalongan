@@ -51,7 +51,7 @@ const Card = ({
     } else {
       const regisDate = date.format("YYYY-MM-DD");
       const newRegis = {
-        data_pasien: userData.user.ID_BPJS,
+        data_pasien_id: userData.user.ID_BPJS,
         tanggal_konsultasi: regisDate,
         keluhan: keluhan.keluhan,
         nama_dokter: doctorData.nama_dokter,
