@@ -16,7 +16,7 @@ class HariPraktekSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PendaftaranSerializer(serializers.ModelSerializer):
-    data_pasien = PasienSerializer()
+    data_pasien = serializers.PrimaryKeyRelatedField(queryset=pasien.objects.all())
     #sesi_praktek_dokter = Ha
     # riPraktekSerializer()
     class Meta:
