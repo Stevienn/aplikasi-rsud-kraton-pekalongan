@@ -16,12 +16,21 @@ class HariPraktekSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PendaftaranSerializer(serializers.ModelSerializer):
-    data_pasien = serializers.PrimaryKeyRelatedField(queryset=pasien.objects.all())
-    #sesi_praktek_dokter = Ha
-    # riPraktekSerializer()
+    data_pasien = PasienSerializer(read_only=True)  # untuk GET (nested)
+    data_pasien_id = serializers.PrimaryKeyRelatedField(
+        queryset=pasien.objects.all(), write_only=True, source='data_pasien'
+    )  # untuk POST/PUT, hanya kirim ID
     class Meta:
         model = Pendaftaran
-        fields = '__all__'
+        fields = [
+            'id',
+            'data_pasien',       # full nested object for response
+            'data_pasien_id',    # ID only for write (input)
+            'tanggal_konsultasi',
+            'keluhan',
+            'nama_dokter',
+            'sesi_praktek_dokter',
+        ]
 
 class ScheduleSerializer(serializers.ModelSerializer):
     data_pendaftaran = PendaftaranSerializer(many=True)
