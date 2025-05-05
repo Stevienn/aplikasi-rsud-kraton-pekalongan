@@ -17,6 +17,7 @@ import {
   clearTempRegistration,
   getTempRegistration,
 } from "./assets/tempRegistration";
+import { useGetScheduleById, useUpdateSchedule } from "@/hooks/api/useSchedule";
 
 interface ICardProps {
   doctorData: IDoctor;
@@ -42,6 +43,10 @@ const Card = ({
 
   const createRegis = useCreateRegistration();
 
+  const { data: schedule } = useGetScheduleById(doctorData.schedule_dokter.id);
+
+  const { mutate: updateSchedule } = useUpdateSchedule();
+
   const today = dayjs();
   const disabledDate = today.add(7, "day");
 
@@ -64,6 +69,16 @@ const Card = ({
         },
         onError: (error) => {
           console.error("Gagal menambahkan pendaftaran:", error);
+        },
+      });
+
+      const existingScheduleData = schedule?.data_pendaftaran || [];
+      const updatedDataPendaftaran = [...existingScheduleData, newRegis];
+
+      updateSchedule({
+        id: doctorData.schedule_dokter.id,
+        data: {
+          data_pendaftaran: updatedDataPendaftaran,
         },
       });
     }

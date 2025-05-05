@@ -1,5 +1,5 @@
 interface IPendaftaran {
-  data_pasien: string;
+  data_pasien_id: string;
   tanggal_konsultasi: string;
   keluhan: string;
   nama_dokter: string;

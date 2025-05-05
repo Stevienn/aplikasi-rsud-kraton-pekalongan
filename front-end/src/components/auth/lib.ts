@@ -33,6 +33,7 @@ export async function login({ userData, isDokter }: any) {
       tanggal_lahir: userData.tanggal_lahir,
       nomor_HP: userData.nomor_HP,
       email_pasien: userData.email_pasien,
+      nomor_urut: userData.nomor_urut,
     };
     await createSession({ user: user, isDokter: false });
   } else {

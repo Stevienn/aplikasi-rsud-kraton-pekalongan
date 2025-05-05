@@ -11,9 +11,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { IUserData } from "@/interface/patientInterface";
 
 const Keluhan = () => {
-  const [userData, setUserData] = useState<IUser | null>(null);
+  const [userData, setUserData] = useState<IUserData | null>(null);
   const [keluhan, setKeluhan] = useState("");
   const [already, setAlready] = useState("");
   const [modalRegistration, setModalRegistration] = useState(false);
@@ -52,6 +53,8 @@ const Keluhan = () => {
       setModalRegistration(true);
     }
   };
+
+  console.log(userData);
   return (
     <>
       <div id="shared-modal">

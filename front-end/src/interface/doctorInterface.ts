@@ -8,7 +8,8 @@ interface ISchedule {
 }
 
 interface IScheduleDokter {
-  hari_praktek_dokter: ISchedule[];
+  id: number;
+  hari_praktek_dokter?: ISchedule[];
   data_pendaftaran: IPendaftaran[];
 }
 
