@@ -8,6 +8,7 @@ class pasien(models.Model):
     tanggal_lahir = models.DateField()
     nomor_HP = models.CharField(max_length=13)
     email_pasien = models.CharField(max_length=50)
+    nomor_urut = models.IntegerField(blank=True)
     
     def __str__(self):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
@@ -21,7 +22,6 @@ class hari_praktek(models.Model):
         return (f"Hari : {self.hari}, Sesi : {self.sesi_praktek}, Total Jam :  {self.jam_total}")
     
 class Pendaftaran(models.Model):
-    #id_pendaftaran = models.IntegerField()
     data_pasien = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='id_bpjs_set')
     tanggal_konsultasi = models.DateField()
     keluhan = models.CharField(max_length=100)
