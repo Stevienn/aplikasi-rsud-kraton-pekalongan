@@ -13,7 +13,10 @@ import { redirect } from "next/navigation";
 import { FormControl, MenuItem, Select } from "@mui/material";
 import { useCreateRegistration } from "@/hooks/api/useRegistration";
 import { IUserData } from "@/interface/patientInterface";
-import { getTempRegistration } from "./assets/tempRegistration";
+import {
+  clearTempRegistration,
+  getTempRegistration,
+} from "./assets/tempRegistration";
 
 interface ICardProps {
   doctorData: IDoctor;
@@ -30,13 +33,12 @@ const Card = ({
 }: ICardProps) => {
   dayjs.locale("id");
   const [modalSchedule, setModalSchedule] = useState(false);
+  const [modalSuccess, setModalSuccess] = useState(false);
   const [modalRegistration, setModalRegistration] = useState(false);
   const [date, setDate] = useState("");
   const [dayName, setDayName] = useState("");
   const [selectedSession, setSelectedSession] = useState("");
   const keluhan = getTempRegistration();
-
-  console.log(keluhan);
 
   const createRegis = useCreateRegistration();
 
@@ -51,13 +53,14 @@ const Card = ({
       const newRegis = {
         data_pasien: userData.user.ID_BPJS,
         tanggal_konsultasi: regisDate,
-        keluhan: keluhan,
+        keluhan: keluhan.keluhan,
         nama_dokter: doctorData.nama_dokter,
         sesi_praktek_dokter: selectedSession,
       };
       createRegis.mutate(newRegis, {
         onSuccess: () => {
-          redirect("/konfirmasi");
+          clearTempRegistration();
+          setModalSuccess(true);
         },
         onError: (error) => {
           console.error("Gagal menambahkan pendaftaran:", error);
@@ -116,6 +119,28 @@ const Card = ({
 
   return (
     <div id="shared-modal">
+      {modalSuccess && (
+        <Modal
+          onClose={() => {
+            setModalSuccess(false);
+            redirect("/konfirmasi");
+          }}
+          width="w-[888px]"
+        >
+          <Modal.Header title="RSUD Kraton Pekalongan" />
+          <Modal.Body>
+            <div>
+              <p className="font-medium text-[18px]">Pendaftaran Berhasil !</p>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              placeholder="Selanjutnya"
+              onClick={() => redirect("/konfirmasi")}
+            />
+          </Modal.Footer>
+        </Modal>
+      )}
       {modalSchedule && (
         <Modal width="w-[500px]">
           <Modal.Header title={`Jadwal Praktek ${doctorData.nama_dokter}`} />

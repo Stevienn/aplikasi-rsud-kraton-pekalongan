@@ -1,13 +1,12 @@
-let tempRegistration = ""; // variabel biasa
-
 export const addToTempRegistration = (data) => {
-  tempRegistration = data;
+  localStorage.setItem("tempRegistration", JSON.stringify(data));
 };
 
 export const getTempRegistration = () => {
-  return tempRegistration;
+  const savedData = localStorage.getItem("tempRegistration");
+  return savedData ? JSON.parse(savedData) : "";
 };
 
 export const clearTempRegistration = () => {
-  tempRegistration = "";
+  localStorage.removeItem("tempRegistration");
 };
