@@ -8,7 +8,7 @@ class pasien(models.Model):
     tanggal_lahir = models.DateField()
     nomor_HP = models.CharField(max_length=13)
     email_pasien = models.CharField(max_length=50)
-    nomor_urut = models.IntegerField(null=True)
+    nomor_urut = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
