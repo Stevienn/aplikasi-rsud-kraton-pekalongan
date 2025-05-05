@@ -1,7 +1,5 @@
-import { IUser } from "./patientInterface";
-
 interface IPendaftaran {
-  data_pasien: IUser;
+  data_pasien: string;
   tanggal_konsultasi: string;
   keluhan: string;
   nama_dokter: string;

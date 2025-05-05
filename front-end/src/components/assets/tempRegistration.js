@@ -1,7 +1,7 @@
-const tempRegistration = [];
+let tempRegistration = ""; // variabel biasa
 
 export const addToTempRegistration = (data) => {
-  tempRegistration.push(data);
+  tempRegistration = data;
 };
 
 export const getTempRegistration = () => {
@@ -9,5 +9,5 @@ export const getTempRegistration = () => {
 };
 
 export const clearTempRegistration = () => {
-  tempRegistration.length = 0;
+  tempRegistration = "";
 };

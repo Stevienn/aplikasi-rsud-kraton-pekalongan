@@ -5,7 +5,6 @@ import { logout } from "@/components/auth/lib";
 import Button from "@/components/form/Button";
 import FormLayout from "@/components/form/FormLayout";
 import Modal from "@/components/Modal";
-import { useCreateRegistration } from "@/hooks/api/useRegistration";
 import { addToTempRegistration } from "@/components/assets/tempRegistration";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

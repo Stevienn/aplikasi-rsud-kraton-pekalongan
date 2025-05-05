@@ -1,23 +1,24 @@
+import IPendaftaran from "./pendaftaranInterface";
+
 interface ISchedule {
-  jam_praktek_a?: string; // Optional, as not all days may have this
-  total_jam_a?: number;
-  jam_praktek_b?: string;
-  total_jam_b?: number;
-  jam_praktek?: string;
-  total_jam?: number;
-  pasien?: number[];
+  id: number;
+  hari: string;
+  sesi_praktek: string[];
+  jam_total: number;
+}
+
+interface IScheduleDokter {
+  hari_praktek_dokter: ISchedule[];
+  data_pendaftaran: IPendaftaran[];
 }
 
 interface IDoctor {
   id: number;
-  name: string;
-  image: string;
-  email: string;
-  password: string;
-  specialty: string;
-  schedule: {
-    [key: string]: ISchedule;
-  };
+  nama_dokter: string;
+  image_dokter: string;
+  email_dokter: string;
+  password_dokter: string;
+  schedule_dokter: IScheduleDokter;
 }
 
-export type { ISchedule, IDoctor };
+export type { ISchedule, IDoctor, IScheduleDokter };
