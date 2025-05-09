@@ -1,4 +1,5 @@
 interface IPendaftaran {
+  id?: number;
   data_pasien_id: string;
   tanggal_konsultasi: string;
   keluhan: string;

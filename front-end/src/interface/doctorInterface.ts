@@ -11,6 +11,7 @@ interface IScheduleDokter {
   id: number;
   hari_praktek_dokter?: ISchedule[];
   data_pendaftaran: IPendaftaran[];
+  data_pendaftaran_ids: number[];
 }
 
 interface IDoctor {

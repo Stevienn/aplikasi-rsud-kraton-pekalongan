@@ -63,22 +63,24 @@ const Card = ({
         sesi_praktek_dokter: selectedSession,
       };
       createRegis.mutate(newRegis, {
-        onSuccess: () => {
+        onSuccess: (createdData) => {
+          const newRegisId = createdData.id;
+
+          const existingIds = schedule?.data_pendaftaran.map((d) => d.id) || [];
+          const updatedIds = [...existingIds, newRegisId];
+
+          updateSchedule({
+            id: doctorData.schedule_dokter.id,
+            data: {
+              data_pendaftaran_ids: updatedIds, // ← INI penting! Hanya array of ID
+            },
+          });
+
           clearTempRegistration();
           setModalSuccess(true);
         },
         onError: (error) => {
           console.error("Gagal menambahkan pendaftaran:", error);
-        },
-      });
-
-      const existingScheduleData = schedule?.data_pendaftaran || [];
-      const updatedDataPendaftaran = [...existingScheduleData, newRegis];
-
-      updateSchedule({
-        id: doctorData.schedule_dokter.id,
-        data: {
-          data_pendaftaran: updatedDataPendaftaran,
         },
       });
     }

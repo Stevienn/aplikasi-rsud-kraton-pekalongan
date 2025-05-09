@@ -26,7 +26,7 @@ export const useGetRegistrationById = (id) => {
 };
 
 export const useCreateRegistration = () => {
-  return useMutation<void, Error, IPendaftaran>({
+  return useMutation<IPendaftaran, Error, IPendaftaran>({
     mutationFn: async (newRegistration) => {
       const response = await axios.post("/Pendaftaran/", newRegistration);
       return response.data;
