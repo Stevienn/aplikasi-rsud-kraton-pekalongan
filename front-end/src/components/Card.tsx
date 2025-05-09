@@ -17,6 +17,7 @@ import {
   clearTempRegistration,
   getTempRegistration,
 } from "./assets/tempRegistration";
+import { useGetScheduleById, useUpdateSchedule } from "@/hooks/api/useSchedule";
 
 interface ICardProps {
   doctorData: IDoctor;
@@ -42,6 +43,10 @@ const Card = ({
 
   const createRegis = useCreateRegistration();
 
+  const { data: schedule } = useGetScheduleById(doctorData.schedule_dokter.id);
+
+  const { mutate: updateSchedule } = useUpdateSchedule();
+
   const today = dayjs();
   const disabledDate = today.add(7, "day");
 
@@ -51,14 +56,26 @@ const Card = ({
     } else {
       const regisDate = date.format("YYYY-MM-DD");
       const newRegis = {
-        data_pasien: userData.user.ID_BPJS,
+        data_pasien_id: userData.user.ID_BPJS,
         tanggal_konsultasi: regisDate,
         keluhan: keluhan.keluhan,
         nama_dokter: doctorData.nama_dokter,
         sesi_praktek_dokter: selectedSession,
       };
       createRegis.mutate(newRegis, {
-        onSuccess: () => {
+        onSuccess: (createdData) => {
+          const newRegisId = createdData.id;
+
+          const existingIds = schedule?.data_pendaftaran.map((d) => d.id) || [];
+          const updatedIds = [...existingIds, newRegisId];
+
+          updateSchedule({
+            id: doctorData.schedule_dokter.id,
+            data: {
+              data_pendaftaran_ids: updatedIds, // ← INI penting! Hanya array of ID
+            },
+          });
+
           clearTempRegistration();
           setModalSuccess(true);
         },
