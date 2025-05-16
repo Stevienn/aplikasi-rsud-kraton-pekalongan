@@ -1,17 +1,17 @@
 import IPendaftaran from "./pendaftaranInterface";
 
-interface ISchedule {
+interface ISession {
   id: number;
+  jam_sesi: string;
+  jam_total: number;
   data_pendaftaran: IPendaftaran[];
   data_pendaftaran_ids: number[];
-  hari: string;
-  sesi_praktek: string[];
-  jam_total: number;
 }
 
-interface IScheduleDokter {
+interface ISchedule {
   id: number;
-  hari_praktek_dokter?: ISchedule[];
+  hari: string;
+  hari_praktek_set: ISession[];
 }
 
 interface IDoctor {
@@ -20,7 +20,7 @@ interface IDoctor {
   image_dokter: string;
   email_dokter: string;
   password_dokter: string;
-  schedule_dokter: IScheduleDokter;
+  schedule_dokter: ISchedule[];
 }
 
-export type { ISchedule, IDoctor, IScheduleDokter };
+export type { ISchedule, IDoctor, ISession };
