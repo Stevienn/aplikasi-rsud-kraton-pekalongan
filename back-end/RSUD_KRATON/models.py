@@ -69,14 +69,27 @@ class perawat(models.Model):
         return (f"Perawat : {self.nama_perawat}")
 
 class ICD(models.Model):
-    kode = models.CharField(max_length=10)
-    nama_diagnosa = models.CharField(max_length=20)
+    kode = models.CharField(max_length=20)
+    nama_diagnosa = models.CharField(max_length=100)
 
     def __str__(self):
         return (f'id : {self.id}, Kode : {self.kode}, Diagnosa : {self.nama_diagnosa}')
 
-class Diagnosa(models.Model):
-    data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='is_pendaftaran_set')
-    diagnosa_subjektif = models.CharField(max_length=100)
-    diagnosa_icd_1 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_1_set')
-    diagnosa_icd_2 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_2_set')
+# class Diagnosa(models.Model):
+#     data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='is_pendaftaran_set')
+#     diagnosa_subjektif = models.CharField(max_length=100)
+#     diagnosa_icd_1 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_1_set')
+#     diagnosa_icd_2 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_2_set')
+
+class history(models.Model):
+    tanggal_konsultasi = models.DateField()
+    keluhan = models.CharField(max_length=100)
+    diagnosa_sub = models.CharField(max_length=200)
+    diagnosa_primary = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='diagnosa_primary_set')
+    diagnosa_secondary = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='diagnosa_secondary_set', blank=True)
+    
+class rekap_medis(models.Model):
+    ID_BPJS = models.ForeignKey(pasien, primary_key=True, on_delete=models.CASCADE, related_name='pasien_set')
+    id_dokter_umum = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='dokter_umum_set', blank=True)
+    id_dokter_spesialis = models.ForeignKey(Dokter_spesialis, on_delete=models.CASCADE, related_name='dokter_spesialis_set', blank=True)
+    history = models.ManyToManyField(history, related_name='history_set')
