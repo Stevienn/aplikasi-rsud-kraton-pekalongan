@@ -52,7 +52,7 @@ class Dokter_spesialis(models.Model):
     nama_dokter_spc = models.CharField(max_length=50)
     password_dokter_spc = models.CharField(max_length=20)
     email_dokter_spc = models.CharField(max_length=50)
-    spesialization = models.CharField(max_length=20)
+    spesialization = models.CharField(max_length=100)
     image_dokter_spc = models.CharField(max_length=100)
     schedule_dokter_spc = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_spc_set')
 
