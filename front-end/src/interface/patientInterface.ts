@@ -5,6 +5,7 @@ interface IUser {
   tanggal_lahir: string;
   nomor_HP: string;
   email_pasien: string;
+  nomor_urut: number | null;
 }
 
 interface IUserData {

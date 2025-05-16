@@ -42,7 +42,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
       setIsWarningInput("No BPJS belum terdaftar !");
     } else {
       if (input == patientData.ID_BPJS && validate == patientData.nama) {
-        await login({ userData: patientData, isDokter: false });
+        await login({ userData: patientData });
       } else if (
         input == patientData.ID_BPJS &&
         validate !== patientData.nama
@@ -60,7 +60,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
 
     if (doctorData) {
       if (input == doctorData.email && validate == doctorData.password) {
-        await login({ userData: doctorData, isDokter: true });
+        await login({ userData: doctorData });
       } else if (
         input == doctorData.email &&
         validate !== doctorData.password

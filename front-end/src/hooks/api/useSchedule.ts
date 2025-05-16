@@ -1,4 +1,4 @@
-import { IScheduleDokter } from "@/interface/doctorInterface";
+import { ISchedule, IScheduleDokter } from "@/interface/doctorInterface";
 import axios from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -22,9 +22,9 @@ export const useUpdateSchedule = () => {
       data,
     }: {
       id: number;
-      data: Partial<IScheduleDokter>;
+      data: Partial<ISchedule>;
     }) => {
-      const response = await axios.patch(`/Schedule/${id}/`, data);
+      const response = await axios.patch(`/HariPraktek/${id}/`, data);
       return response.data;
     },
     onSuccess: () => {

@@ -2,6 +2,8 @@ import IPendaftaran from "./pendaftaranInterface";
 
 interface ISchedule {
   id: number;
+  data_pendaftaran: IPendaftaran[];
+  data_pendaftaran_ids: number[];
   hari: string;
   sesi_praktek: string[];
   jam_total: number;
@@ -10,8 +12,6 @@ interface ISchedule {
 interface IScheduleDokter {
   id: number;
   hari_praktek_dokter?: ISchedule[];
-  data_pendaftaran: IPendaftaran[];
-  data_pendaftaran_ids: number[];
 }
 
 interface IDoctor {

@@ -23,31 +23,18 @@ export async function decrypt(session: any) {
   return payload;
 }
 
-export async function login({ userData, isDokter }: any) {
+export async function login({ userData }: any) {
   //1. GetUser
-  if (!isDokter) {
-    const user = {
-      ID_BPJS: userData.ID_BPJS,
-      nama: userData.nama,
-      jenis_kelamin: userData.jenis_kelamin,
-      tanggal_lahir: userData.tanggal_lahir,
-      nomor_HP: userData.nomor_HP,
-      email_pasien: userData.email_pasien,
-      nomor_urut: userData.nomor_urut,
-    };
-    await createSession({ user: user, isDokter: false });
-  } else {
-    const user = {
-      id: userData.id,
-      name: userData.name,
-      image: userData.image,
-      email: userData.email,
-      password: userData.password,
-      specialty: userData.specialty,
-      schedule: userData.schedule,
-    };
-    await createSession({ user: user, isDokter: true });
-  }
+  const user = {
+    ID_BPJS: userData.ID_BPJS,
+    nama: userData.nama,
+    jenis_kelamin: userData.jenis_kelamin,
+    tanggal_lahir: userData.tanggal_lahir,
+    nomor_HP: userData.nomor_HP,
+    email_pasien: userData.email_pasien,
+    nomor_urut: userData.nomor_urut,
+  };
+  await createSession({ user: user });
 
   //2. Create the cookies session
 }

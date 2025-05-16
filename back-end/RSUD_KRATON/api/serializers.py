@@ -9,12 +9,7 @@ class PasienSerializer(serializers.ModelSerializer):
     class Meta: 
         model = pasien
         fields = '__all__'
-
-class HariPraktekSerializer(serializers.ModelSerializer):
-    class Meta: 
-        model = hari_praktek
-        fields = '__all__'
-
+        
 class PendaftaranSerializer(serializers.ModelSerializer):
     data_pasien = PasienSerializer(read_only=True)  # untuk GET (nested)
     data_pasien_id = serializers.PrimaryKeyRelatedField(
@@ -31,19 +26,28 @@ class PendaftaranSerializer(serializers.ModelSerializer):
             'nama_dokter',
             'sesi_praktek_dokter',
         ]
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    data_pendaftaran = PendaftaranSerializer(many=True)
+        
+class HariPraktekSerializer(serializers.ModelSerializer):
+    data_pendaftaran = PendaftaranSerializer(many=True, read_only=True)
     data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
-    hari_praktek_dokter = HariPraktekSerializer(many=True)
-    class Meta:
-        model = schedule
+    class Meta: 
+        model = hari_praktek
         fields = [
             'id',
             'data_pendaftaran',
             'data_pendaftaran_ids',
-            'hari_praktek_dokter',
+            'hari',
+            'sesi_praktek',
+            'jam_total',
         ]
+
+
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    hari_praktek_dokter = HariPraktekSerializer(many=True)
+    class Meta:
+        model = schedule
+        fields = '__all__'
 
 class DokterSerializer(serializers.ModelSerializer):
     schedule_dokter = ScheduleSerializer()

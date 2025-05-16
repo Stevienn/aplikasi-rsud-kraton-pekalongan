@@ -35,7 +35,6 @@ const PilihDokter = () => {
             userData={userData}
             doctorData={doctor}
             categories="Dokter Umum"
-            bpjsId={userData?.user.ID_BPJS}
             customCategoryClass="w-[140px]"
           />
         ))}

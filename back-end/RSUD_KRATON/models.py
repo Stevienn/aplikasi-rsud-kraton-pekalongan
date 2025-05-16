@@ -13,14 +13,6 @@ class pasien(models.Model):
     def __str__(self):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
 
-class hari_praktek(models.Model):
-    hari = models.CharField(max_length=50)
-    sesi_praktek = models.JSONField(default=list)
-    jam_total = models.IntegerField()
-
-    def __str__(self):
-        return (f"Hari : {self.hari}, Sesi : {self.sesi_praktek}, Total Jam :  {self.jam_total}")
-    
 class Pendaftaran(models.Model):
     data_pasien = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='id_bpjs_set')
     tanggal_konsultasi = models.DateField()
@@ -30,12 +22,18 @@ class Pendaftaran(models.Model):
     
     def __str__(self):
         return (f'Tanggal : {self.tanggal_konsultasi}, Nama Dokter : {self.nama_dokter}, Sesi : {self.sesi_praktek_dokter}') 
-    
-class schedule(models.Model):
-    #schedule_id = models.IntegerField()
-    #id_dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='id_dokter_set')
-    hari_praktek_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
+
+class hari_praktek(models.Model):
+    hari = models.CharField(max_length=50)
+    sesi_praktek = models.JSONField(default=list)
+    jam_total = models.IntegerField()
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name='data_pendaftaran_set', blank=True) 
+
+    def __str__(self):
+        return (f"Hari : {self.hari}, Sesi : {self.sesi_praktek}, Total Jam :  {self.jam_total}")
+
+class schedule(models.Model):
+    hari_praktek_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
     
 class Dokter(models.Model):
     nama_dokter = models.CharField(max_length=50)
