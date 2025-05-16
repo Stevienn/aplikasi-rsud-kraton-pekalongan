@@ -64,11 +64,28 @@ class PerawatSerializer(serializers.ModelSerializer):
         model = perawat
         fields = '__all__'
 
-class DiagnosaSerializer(serializers.ModelSerializer):
-    data_pendaftaran = PendaftaranSerializer()
-    diagnosa_icd_1 = IcdSerializer()
-    diagnosa_icd_2 = IcdSerializer()
+# class DiagnosaSerializer(serializers.ModelSerializer):
+#     data_pendaftaran = PendaftaranSerializer()
+#     diagnosa_icd_1 = IcdSerializer()
+#     diagnosa_icd_2 = IcdSerializer()
 
+#     class Meta:
+#         model = Diagnosa
+#         fields = '__all__'
+
+class HistorySerializer(serializers.ModelSerializer):
+    diagnosa_primary = IcdSerializer()
+    diagnosa_secondary = IcdSerializer()
+    
     class Meta:
-        model = Diagnosa
+        model = history
+        fields = '__all__'
+
+class RekapMedisSerializer(serializers.ModelSerializer):
+    ID_BPJS = PasienSerializer()
+    id_dokter_umum = DokterSerializer()
+    id_dokter_spesialis = DokterSpesialisSerializer()
+    
+    class Meta:
+        model = rekap_medis
         fields = '__all__'
