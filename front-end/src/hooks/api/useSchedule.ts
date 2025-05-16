@@ -1,12 +1,12 @@
-import { ISchedule, IScheduleDokter } from "@/interface/doctorInterface";
+import { ISchedule, ISession } from "@/interface/doctorInterface";
 import axios from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useGetScheduleById = (id: number) => {
-  return useQuery<IScheduleDokter>({
+  return useQuery<ISchedule>({
     queryKey: ["schedule", id],
     queryFn: async () => {
-      const response = await axios.get(`/Schedule/${id}`);
+      const response = await axios.get(`/HariPraktek/${id}`);
       return response.data;
     },
     enabled: !!id,
@@ -22,9 +22,9 @@ export const useUpdateSchedule = () => {
       data,
     }: {
       id: number;
-      data: Partial<ISchedule>;
+      data: Partial<ISession>;
     }) => {
-      const response = await axios.patch(`/HariPraktek/${id}/`, data);
+      const response = await axios.patch(`/SesiPraktek/${id}/`, data);
       return response.data;
     },
     onSuccess: () => {

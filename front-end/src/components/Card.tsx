@@ -44,28 +44,27 @@ const Card = ({
 
   const createRegis = useCreateRegistration();
 
-  const { data: schedule } = useGetScheduleById(doctorData.schedule_dokter.id);
-
   const { mutate: updateSchedule } = useUpdateSchedule();
   const { mutate: updateUser } = useUpdateUser();
 
   const today = dayjs();
   const disabledDate = today.add(7, "day");
 
-  console.log("user", userData);
-
   const handleRegistration = () => {
     if (selectedSession == "") {
       alert("Mohon pilih sesi terlebih dahulu");
     } else {
-      const getDay = doctorData.schedule_dokter.hari_praktek_dokter?.find(
+      const getDay = doctorData.schedule_dokter.find(
         (data) => dayName == data.hari
       );
       if (!getDay) {
         console.error(`Jadwal hari ${dayName} tidak ditemukan.`);
         return;
       }
-      const totalRegis = getDay.data_pendaftaran.length || 0;
+      const totalRegis = getDay.hari_praktek_set.reduce(
+        (acc, sesi) => acc + sesi.data_pendaftaran.length,
+        0
+      );
 
       updateUser({
         id: userData.user.ID_BPJS,
@@ -73,8 +72,6 @@ const Card = ({
           nomor_urut: totalRegis + 1,
         },
       });
-
-      console.log("user setelah handle", userData);
 
       const regisDate = date.format("YYYY-MM-DD");
       const newRegis = {
@@ -88,11 +85,16 @@ const Card = ({
         onSuccess: (createdData) => {
           const newRegisId = createdData.id;
 
-          const existingIds = getDay.data_pendaftaran.map((d) => d.id) || [];
+          const getSession = getDay?.hari_praktek_set.find(
+            (sesi) => sesi.jam_sesi === selectedSession
+          );
+
+          const existingIds =
+            getSession?.data_pendaftaran.map((d) => d.id) || [];
           const updatedIds = [...existingIds, newRegisId];
 
           updateSchedule({
-            id: getDay.id,
+            id: getSession.id,
             data: {
               data_pendaftaran_ids: updatedIds, // ← INI penting! Hanya array of ID
             },
@@ -116,10 +118,10 @@ const Card = ({
             <div key={index} className="mt-[10px]">
               <p className="font-semibold underline">{schedule.hari}</p>
             </div>
-            {schedule.sesi_praktek.map((sesi_praktek, index) => (
+            {schedule.hari_praktek_set.map((schedule, index) => (
               <div key={index} className="flex gap-[5px]">
                 <p className="font-semibold">Sesi {index + 1} : </p>
-                <p>{sesi_praktek}</p>
+                <p>{schedule.jam_sesi}</p>
               </div>
             ))}
           </>
@@ -129,7 +131,9 @@ const Card = ({
   };
 
   const SessionComponent = ({ session }) => {
-    const getSession = session.find((data) => dayName == data.hari);
+    const getDay = session.find((data) => dayName == data.hari);
+
+    const getSession = getDay?.hari_praktek_set;
 
     return (
       <div>
@@ -139,10 +143,10 @@ const Card = ({
             value={selectedSession}
             onChange={(event) => setSelectedSession(event?.target.value)}
           >
-            {getSession?.sesi_praktek?.length > 0 ? (
-              getSession.sesi_praktek.map((sessionData) => (
-                <MenuItem key={sessionData} value={sessionData}>
-                  {sessionData}
+            {getSession?.length > 0 ? (
+              getSession.map((sessionData) => (
+                <MenuItem key={sessionData.id} value={sessionData.jam_sesi}>
+                  {sessionData.jam_sesi}
                 </MenuItem>
               ))
             ) : (
@@ -184,9 +188,7 @@ const Card = ({
         <Modal width="w-[500px]">
           <Modal.Header title={`Jadwal Praktek ${doctorData.nama_dokter}`} />
           <Modal.Body>
-            <ScheduleDisplay
-              schedule={doctorData.schedule_dokter.hari_praktek_dokter}
-            />
+            <ScheduleDisplay schedule={doctorData.schedule_dokter} />
             <></>
           </Modal.Body>
           <Modal.Footer>
@@ -229,9 +231,7 @@ const Card = ({
                 </p>
               </div>
               <div>
-                <SessionComponent
-                  session={doctorData.schedule_dokter.hari_praktek_dokter}
-                />
+                <SessionComponent session={doctorData.schedule_dokter} />
               </div>
             </>
           </Modal.Body>

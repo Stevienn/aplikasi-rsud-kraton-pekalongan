@@ -9,7 +9,7 @@ class PasienSerializer(serializers.ModelSerializer):
     class Meta: 
         model = pasien
         fields = '__all__'
-        
+
 class PendaftaranSerializer(serializers.ModelSerializer):
     data_pasien = PasienSerializer(read_only=True)  # untuk GET (nested)
     data_pasien_id = serializers.PrimaryKeyRelatedField(
@@ -26,37 +26,30 @@ class PendaftaranSerializer(serializers.ModelSerializer):
             'nama_dokter',
             'sesi_praktek_dokter',
         ]
-        
-class HariPraktekSerializer(serializers.ModelSerializer):
+
+class SesiPraktekSerializer(serializers.ModelSerializer):
     data_pendaftaran = PendaftaranSerializer(many=True, read_only=True)
     data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
-    class Meta: 
-        model = hari_praktek
-        fields = [
-            'id',
-            'data_pendaftaran',
-            'data_pendaftaran_ids',
-            'hari',
-            'sesi_praktek',
-            'jam_total',
-        ]
 
-
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    hari_praktek_dokter = HariPraktekSerializer(many=True)
     class Meta:
-        model = schedule
-        fields = '__all__'
+        model = sesi_praktek
+        fields = ['id', 'jam_sesi', 'jam_total', 'data_pendaftaran', 'data_pendaftaran_ids']
+
+class HariPraktekSerializer(serializers.ModelSerializer):
+    hari_praktek_set = SesiPraktekSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = hari_praktek
+        fields = ['id', 'hari', 'hari_praktek_set']
 
 class DokterSerializer(serializers.ModelSerializer):
-    schedule_dokter = ScheduleSerializer()
+    schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
     class Meta:
         model = Dokter
         fields = '__all__'
 
 class DokterSpesialisSerializer(serializers.ModelSerializer):
-    schedule_dokter_spc = ScheduleSerializer()
+    schedule_dokter_spc = HariPraktekSerializer(many=True, read_only=True)
     class Meta:
         model = Dokter_spesialis
         fields = '__all__'
@@ -75,7 +68,7 @@ class DiagnosaSerializer(serializers.ModelSerializer):
     data_pendaftaran = PendaftaranSerializer()
     diagnosa_icd_1 = IcdSerializer()
     diagnosa_icd_2 = IcdSerializer()
-    
+
     class Meta:
         model = Diagnosa
         fields = '__all__'
