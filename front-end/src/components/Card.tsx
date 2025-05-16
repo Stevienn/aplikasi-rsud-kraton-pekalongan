@@ -17,7 +17,7 @@ import {
   clearTempRegistration,
   getTempRegistration,
 } from "./assets/tempRegistration";
-import { useGetScheduleById, useUpdateSchedule } from "@/hooks/api/useSchedule";
+import { useUpdateSchedule } from "@/hooks/api/useSchedule";
 import { useUpdateUser } from "@/hooks/api/useUser";
 
 interface ICardProps {

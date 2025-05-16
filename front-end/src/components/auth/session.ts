@@ -8,8 +8,11 @@ export async function createSession({ user }: any) {
   const session = await encrypt({ user, expires });
 
   (await cookies()).set("session", session, { expires, httpOnly: true });
-
-  redirect("/keluhan");
+  if (user.nomor_urut == null) {
+    redirect("/keluhan");
+  } else {
+    redirect("/konfirmasi");
+  }
 }
 
 export async function verifySession() {
