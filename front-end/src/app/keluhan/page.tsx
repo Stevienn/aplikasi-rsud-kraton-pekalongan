@@ -54,7 +54,6 @@ const Keluhan = () => {
     }
   };
 
-  console.log(userData);
   return (
     <>
       <div id="shared-modal">

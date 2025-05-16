@@ -18,6 +18,7 @@ import {
   getTempRegistration,
 } from "./assets/tempRegistration";
 import { useGetScheduleById, useUpdateSchedule } from "@/hooks/api/useSchedule";
+import { useUpdateUser } from "@/hooks/api/useUser";
 
 interface ICardProps {
   doctorData: IDoctor;
@@ -46,14 +47,35 @@ const Card = ({
   const { data: schedule } = useGetScheduleById(doctorData.schedule_dokter.id);
 
   const { mutate: updateSchedule } = useUpdateSchedule();
+  const { mutate: updateUser } = useUpdateUser();
 
   const today = dayjs();
   const disabledDate = today.add(7, "day");
+
+  console.log("user", userData);
 
   const handleRegistration = () => {
     if (selectedSession == "") {
       alert("Mohon pilih sesi terlebih dahulu");
     } else {
+      const getDay = doctorData.schedule_dokter.hari_praktek_dokter?.find(
+        (data) => dayName == data.hari
+      );
+      if (!getDay) {
+        console.error(`Jadwal hari ${dayName} tidak ditemukan.`);
+        return;
+      }
+      const totalRegis = getDay.data_pendaftaran.length || 0;
+
+      updateUser({
+        id: userData.user.ID_BPJS,
+        data: {
+          nomor_urut: totalRegis + 1,
+        },
+      });
+
+      console.log("user setelah handle", userData);
+
       const regisDate = date.format("YYYY-MM-DD");
       const newRegis = {
         data_pasien_id: userData.user.ID_BPJS,
@@ -66,11 +88,11 @@ const Card = ({
         onSuccess: (createdData) => {
           const newRegisId = createdData.id;
 
-          const existingIds = schedule?.data_pendaftaran.map((d) => d.id) || [];
+          const existingIds = getDay.data_pendaftaran.map((d) => d.id) || [];
           const updatedIds = [...existingIds, newRegisId];
 
           updateSchedule({
-            id: doctorData.schedule_dokter.id,
+            id: getDay.id,
             data: {
               data_pendaftaran_ids: updatedIds, // ← INI penting! Hanya array of ID
             },
