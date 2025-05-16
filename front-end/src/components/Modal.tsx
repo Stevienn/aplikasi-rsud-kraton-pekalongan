@@ -28,9 +28,10 @@ interface IModalProps {
   children: JSX.Element | JSX.Element[] | string | React.ReactNode;
   width: string;
   onClose?: () => void;
+  customClass?: string;
 }
 
-const Modal = ({ children, width, onClose }: IModalProps) => {
+const Modal = ({ children, width, onClose, customClass }: IModalProps) => {
   const sharedModal = document.querySelectorAll(`[id^="shared-modal"]`)[0];
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -45,7 +46,7 @@ const Modal = ({ children, width, onClose }: IModalProps) => {
 
   return ReactDOM.createPortal(
     <ModalWrapper isOpen={isOpen}>
-      <div className={`${width} bg-white`}>{children}</div>
+      <div className={`${width} ${customClass} bg-white`}>{children}</div>
     </ModalWrapper>,
     sharedModal
   );

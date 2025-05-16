@@ -10,9 +10,7 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 import { redirect, useRouter } from "next/navigation";
 
-import dummyPatient from "@/components/assets/dummyPatient";
-import dummyDoctorUmum from "@/components/assets/dummyDoctorUmum";
-import { login } from "./lib";
+import { login, loginDoctor } from "./lib";
 import { useGetDoctors } from "@/hooks/api/useDoctor";
 import { useGetUsers } from "@/hooks/api/useUser";
 import { useGetRegistration } from "@/hooks/api/useRegistration";
@@ -23,10 +21,10 @@ interface ILoginPageProps {
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
   // const dataPatient = dummyPatient;
+  const router = useRouter();
   const { data: dataPatient } = useGetUsers();
   const { data: dataDoctorUmum } = useGetDoctors();
 
-  const doctorUmum = dummyDoctorUmum;
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
   const [isWarningInput, setIsWarningInput] = useState("");
@@ -56,14 +54,19 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
     setIsWarningInput("");
     setIsWarningValidate("");
 
-    const doctorData = doctorUmum.find((data) => input == data.email);
+    const doctorData = dataDoctorUmum?.find(
+      (data) => input == data.email_dokter
+    );
 
     if (doctorData) {
-      if (input == doctorData.email && validate == doctorData.password) {
-        await login({ userData: doctorData });
+      if (
+        input == doctorData.email_dokter &&
+        validate == doctorData.password_dokter
+      ) {
+        await loginDoctor({ doctorData: doctorData });
       } else if (
-        input == doctorData.email &&
-        validate !== doctorData.password
+        input == doctorData.email_dokter &&
+        validate !== doctorData.password_dokter
       ) {
         setIsWarningValidate("Password yang anda masukkan salah");
       }
@@ -93,33 +96,31 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
               <h1 className="font-light text-[32px] mt-[-10px] mb-[15px] text-blue-primary">
                 PORTAL ADMIN
               </h1>
-              <form>
-                <InputField
-                  name="Email"
-                  type="email"
-                  placeholder="ex: chiesamutiara@gmail.com"
-                  customClass="mb-[30px]"
-                  inputWidth="w-[530px]"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  isWarning={isWarningInput}
-                />
-                <InputField
-                  name="Password"
-                  type="password"
-                  placeholder="********"
-                  customClass="mb-[30px]"
-                  inputWidth="w-[530px]"
-                  value={validate}
-                  onChange={(e) => setValidate(e.target.value)}
-                  isWarning={isWarningValidate}
-                />
+              <InputField
+                name="Email"
+                type="email"
+                placeholder="ex: chiesamutiara@gmail.com"
+                customClass="mb-[30px]"
+                inputWidth="w-[530px]"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                isWarning={isWarningInput}
+              />
+              <InputField
+                name="Password"
+                type="password"
+                placeholder="********"
+                customClass="mb-[30px]"
+                inputWidth="w-[530px]"
+                value={validate}
+                onChange={(e) => setValidate(e.target.value)}
+                isWarning={isWarningValidate}
+              />
 
-                <Button
-                  placeholder="Masuk"
-                  onClick={() => handleValidationAdmin(input, validate)}
-                />
-              </form>
+              <Button
+                placeholder="Masuk"
+                onClick={() => handleValidationAdmin(input, validate)}
+              />
             </>
           ) : (
             <>
