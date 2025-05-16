@@ -36,7 +36,7 @@ class sesi_praktek(models.Model):
     jam_total = models.IntegerField()
 
     def __str__(self):
-        return f"{self.hari_praktek.hari} - {self.jam_sesi}"
+        return f"{self.id}: {self.hari_praktek.hari} - {self.jam_sesi}"
 
 class Dokter(models.Model):
     nama_dokter = models.CharField(max_length=50)
