@@ -23,4 +23,8 @@ interface IDoctor {
   schedule_dokter: ISchedule[];
 }
 
-export type { ISchedule, IDoctor, ISession };
+interface IUserDoctor {
+  user: IDoctor;
+}
+
+export type { ISchedule, IDoctor, ISession, IUserDoctor };

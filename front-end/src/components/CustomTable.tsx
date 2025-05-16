@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { DataGrid, GridColDef, renderActionsCell } from "@mui/x-data-grid";
-import dummyBuatTabel from "@/components/assets/dummyBuatTabel";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Button,
-  IconButton,
+  FormControl,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +15,12 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Image from "next/image";
+import dayjs from "dayjs";
+import "dayjs/locale/id";
+import Modal from "./Modal";
+import Button from "./form/Button";
+import InputField from "./form/InputField";
+import ModalDiagnosa from "./ModalDiagnosa";
 
 const columns = [
   {
@@ -50,10 +55,23 @@ const columns = [
   },
 ];
 
-const CustomTable = () => {
-  const data = dummyBuatTabel;
+dayjs.locale("id");
+
+const CustomTable = ({ doctorData }: any) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedSession, setSelectedSession] = useState("");
+  const [isModal, setIsModal] = useState(false);
+  const [dataPatient, setIsDataPatient] = useState();
+  const [keluhan, setKeluhan] = useState("");
+  const [diagnosaSub, setDiagnosaSub] = useState("");
+  const [diagnosaPrim, setDiagnosaPrim] = useState();
+  const [diagnosaSec, setDiagnosaSec] = useState();
+  const today = selectedDate.format("dddd");
+  const disabled = dayjs();
+
+  const disabledDate = disabled.add(7, "day");
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -66,20 +84,106 @@ const CustomTable = () => {
     setPage(0);
   };
 
-  const rows = data.map((item) => ({
-    id: item.noUrut,
-    namaPasien: item.nama,
-    noBPJS: item.id,
-    jenisKelamin: item.gender,
-    tanggalLahir: item.birthDate,
-  }));
+  const handleChangeDate = (newValue) => {
+    setSelectedDate(newValue);
+  };
+
+  const todayPatient = doctorData.schedule_dokter.find(
+    (data) => today == data.hari
+  );
+
+  const todaySessionPatient = todayPatient.hari_praktek_set.find(
+    (data) => selectedSession == data.jam_sesi
+  );
+
+  const rows = useMemo(() => {
+    if (!todaySessionPatient) return [];
+    return todaySessionPatient.data_pendaftaran.map((data) => ({
+      id: data.data_pasien.nomor_urut,
+      namaPasien: data.data_pasien.nama,
+      noBPJS: data.data_pasien.ID_BPJS,
+      jenisKelamin: data.data_pasien.jenis_kelamin,
+      tanggalLahir: data.data_pasien.tanggal_lahir,
+      keluhan: data.keluhan,
+    }));
+  }, [todaySessionPatient]);
+
+  const SessionComponent = ({ session }) => {
+    const getDay = session.find((data) => today == data.hari);
+
+    const getSession = getDay?.hari_praktek_set;
+
+    // Bikin Default Value
+    useEffect(() => {
+      if (getSession?.length > 0 && !selectedSession) {
+        setSelectedSession(getSession[0].jam_sesi);
+      }
+    }, [getSession, selectedSession]);
+
+    return (
+      <div>
+        <p className="text-blue-primary font-semibold mb-[10px]">Pilih Sesi</p>
+        <FormControl fullWidth>
+          <Select
+            value={selectedSession}
+            onChange={(event) => setSelectedSession(event?.target.value)}
+          >
+            {getSession?.length > 0 ? (
+              getSession.map((sessionData) => (
+                <MenuItem key={sessionData.id} value={sessionData.jam_sesi}>
+                  {sessionData.jam_sesi}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled value="">
+                Tidak ada sesi tersedia
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
+      </div>
+    );
+  };
+
+  const handleAction = (patientId: string, keluhan: string) => {
+    setKeluhan(keluhan);
+    todaySessionPatient.data_pendaftaran.forEach((data) => {
+      if (data.data_pasien.ID_BPJS == patientId) {
+        setIsDataPatient(data.data_pasien);
+      }
+    });
+    setIsModal(true);
+  };
 
   return (
-    <div className="bg-light-primary px-[55px] py-[40px] h-[88dvh] font-inria-sans ">
-      <div className="mb-[20px] flex justify-end">
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker onChange={(newValue) => alert("sabar bang")} />
-        </LocalizationProvider>
+    <div
+      className="bg-light-primary px-[55px] py-[40px] h-[88dvh] font-inria-sans "
+      id="shared-modal"
+    >
+      {isModal && (
+        <ModalDiagnosa
+          dataPatient={dataPatient}
+          keluhan={keluhan}
+          diagnosaSub={diagnosaSub}
+          setDiagnosaSub={setDiagnosaSub}
+          closeModal={() => setIsModal(false)}
+        />
+      )}
+      <div className="mb-[20px] flex justify-between">
+        <SessionComponent session={doctorData.schedule_dokter} />
+        <div>
+          <p className="text-blue-primary font-semibold mb-[10px]">
+            Pilih Tanggal
+          </p>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="id">
+            <DatePicker
+              value={selectedDate}
+              onChange={(newValue) => handleChangeDate(newValue)}
+              minDate={disabled}
+              maxDate={disabledDate}
+            />
+          </LocalizationProvider>
+        </div>
       </div>
 
       <Paper
@@ -106,10 +210,20 @@ const CustomTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, i) => {
-                  return (
+              {rows.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    align="center"
+                    sx={{ padding: 5, fontStyle: "italic", color: "#888" }}
+                  >
+                    Tidak ada data pasien.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, i) => (
                     <TableRow key={i}>
                       {columns.map((column) => {
                         const value = row[column.id];
@@ -125,7 +239,7 @@ const CustomTable = () => {
                                 width={21}
                                 height={21}
                                 onClick={() =>
-                                  alert(`aksi page for ${row.namaPasien} `)
+                                  handleAction(row.noBPJS, row.keluhan)
                                 }
                                 className="cursor-pointer"
                               />
@@ -136,8 +250,8 @@ const CustomTable = () => {
                         );
                       })}
                     </TableRow>
-                  );
-                })}
+                  ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

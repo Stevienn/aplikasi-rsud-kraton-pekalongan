@@ -14,7 +14,6 @@ import { useGetDoctors } from "@/hooks/api/useDoctor";
 const PilihDokter = () => {
   const [userData, setUserData] = useState<IUserData | null>(null);
   const { data: doctorUmum } = useGetDoctors();
-  const [doctorSpesialis, setDoctorSpesialis] = useState(dummyDoctorSpesialis);
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await getUser();

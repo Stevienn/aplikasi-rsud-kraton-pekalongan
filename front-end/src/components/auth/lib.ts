@@ -2,6 +2,7 @@
 
 import { jwtVerify, SignJWT } from "jose";
 import { createSession, deleteSession } from "./session";
+import { redirect } from "next/navigation";
 
 const key = new TextEncoder().encode(process.env.SECRET);
 
@@ -33,6 +34,7 @@ export async function login({ userData }: any) {
     nomor_HP: userData.nomor_HP,
     email_pasien: userData.email_pasien,
     nomor_urut: userData.nomor_urut,
+    role: "pasien",
   };
   await createSession({ user: user });
 
@@ -41,4 +43,22 @@ export async function login({ userData }: any) {
 
 export async function logout() {
   await deleteSession();
+  redirect("/");
+}
+
+export async function logoutAdmin() {
+  await deleteSession();
+  redirect("/admin");
+}
+
+export async function loginDoctor({ doctorData }: any) {
+  const doctor = {
+    id: doctorData.id,
+    nama_dokter: doctorData.nama_dokter,
+    email_dokter: doctorData.email_dokter,
+    image_dokter: doctorData.image_dokter,
+    schedule_dokter: doctorData.schedule_dokter,
+    role: "dokter",
+  };
+  await createSession({ user: doctor });
 }
