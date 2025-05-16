@@ -69,20 +69,20 @@ const Konfirmasi = () => {
           />
           {/* Dokter */}
           <InputField
-            name="Nomor Handphone"
+            name="Nama Dokter"
             type="text"
             customClass="mb-[10px]"
             inputWidth="w-[900px]"
-            value={pendaftaran.data_pasien.nomor_HP}
+            value={pendaftaran.nama_dokter}
             isDisabled
           />
           {/* Jam Praktek */}
           <InputField
-            name="Email"
-            type="email"
+            name="Sesi Praktek"
+            type="text"
             customClass="mb-[10px]"
             inputWidth="w-[900px]"
-            value={pendaftaran.data_pasien.email_pasien}
+            value={pendaftaran.sesi_praktek_dokter}
             isDisabled
           />
           {/* No Urut */}

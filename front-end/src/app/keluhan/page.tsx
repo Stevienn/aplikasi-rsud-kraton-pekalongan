@@ -9,18 +9,32 @@ import { addToTempRegistration } from "@/components/assets/tempRegistration";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import "dayjs/locale/id";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IUserData } from "@/interface/patientInterface";
+import { useGetDoctors, useUpdateDoctor } from "@/hooks/api/useDoctor";
+import { useUpdateUser } from "@/hooks/api/useUser";
+import { useUpdateSchedule } from "@/hooks/api/useSchedule";
+import { useCreateRegistration } from "@/hooks/api/useRegistration";
 
 const Keluhan = () => {
+  dayjs.locale("id");
   const [userData, setUserData] = useState<IUserData | null>(null);
   const [keluhan, setKeluhan] = useState("");
+  const [modalSuccess, setModalSuccess] = useState(false);
   const [already, setAlready] = useState("");
   const [modalRegistration, setModalRegistration] = useState(false);
   const [date, setDate] = useState("");
+  const [dayName, setDayName] = useState("");
+  const { data: doctorUmum } = useGetDoctors();
   const today = dayjs();
   const disabledDate = today.add(7, "day");
+
+  const createRegis = useCreateRegistration();
+
+  const { mutate: updateUser } = useUpdateUser();
+  const { mutate: updateSchedule } = useUpdateSchedule();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,7 +48,7 @@ const Keluhan = () => {
     await logout();
   };
 
-  const handleRegistration = () => {
+  const handleNextPage = () => {
     if (!keluhan.trim()) {
       alert("Keluhan tidak boleh kosong");
       return;
@@ -54,9 +68,97 @@ const Keluhan = () => {
     }
   };
 
+  const handleRegistration = (selectedSession, selectedDoctor) => {
+    const totalRegis = selectedSession.data_pendaftaran.length || 0;
+    updateUser({
+      id: userData?.user.ID_BPJS,
+      data: {
+        nomor_urut: totalRegis + 1,
+      },
+    });
+
+    const regisDate = date.format("YYYY-MM-DD");
+    const newRegis = {
+      data_pasien_id: userData.user.ID_BPJS,
+      tanggal_konsultasi: regisDate,
+      keluhan: keluhan,
+      nama_dokter: selectedDoctor.nama_dokter,
+      sesi_praktek_dokter: selectedSession.jam_sesi,
+    };
+    createRegis.mutate(newRegis, {
+      onSuccess: (createdData) => {
+        const newRegisId = createdData.id;
+
+        const existingIds =
+          selectedSession.data_pendaftaran.map((d) => d.id) || [];
+        const updatedIds = [...existingIds, newRegisId];
+
+        updateSchedule({
+          id: selectedSession.id,
+          data: {
+            data_pendaftaran_ids: updatedIds,
+          },
+        });
+        setModalSuccess(true);
+      },
+      onError: (error) => {
+        console.error("Gagal menambahkan pendaftaran:", error);
+      },
+    });
+  };
+
+  const handleAutoAssign = () => {
+    let minRegistrations = Infinity;
+    let selectedDoctor = null;
+    let selectedSession = null;
+    doctorUmum?.forEach((doctor) => {
+      const getDoctorDay = doctor.schedule_dokter.find(
+        (day) => day.hari === dayName
+      );
+
+      if (getDoctorDay) {
+        getDoctorDay.hari_praktek_set.forEach((session) => {
+          const count = session.data_pendaftaran.length;
+
+          if (count < minRegistrations) {
+            minRegistrations = count;
+            selectedDoctor = doctor;
+            selectedSession = session;
+          }
+        });
+      }
+    });
+    // console.log(selectedDoctor, selectedSession);
+    handleRegistration(selectedSession, selectedDoctor);
+  };
+
   return (
     <>
       <div id="shared-modal">
+        {modalSuccess && (
+          <Modal
+            onClose={() => {
+              setModalSuccess(false);
+              redirect("/konfirmasi");
+            }}
+            width="w-[888px]"
+          >
+            <Modal.Header title="RSUD Kraton Pekalongan" />
+            <Modal.Body>
+              <div>
+                <p className="font-medium text-[18px]">
+                  Pendaftaran Berhasil !
+                </p>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                placeholder="Selanjutnya"
+                onClick={() => redirect("/konfirmasi")}
+              />
+            </Modal.Footer>
+          </Modal>
+        )}
         {modalRegistration && (
           <Modal width="w-[500px]">
             <Modal.Header title="Pendaftaran" />
@@ -66,12 +168,20 @@ const Keluhan = () => {
                   Pilih Tanggal
                 </p>
                 <div className="mb-[6px]">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDayjs}
+                    adapterLocale="id"
+                  >
                     <DatePicker
                       sx={{ width: "100%" }}
                       minDate={today}
                       maxDate={disabledDate}
-                      onChange={(newValue) => setDate(newValue)}
+                      onChange={(newValue) => {
+                        setDate(newValue);
+                        if (newValue) {
+                          setDayName(newValue.format("dddd"));
+                        }
+                      }}
                     />
                   </LocalizationProvider>
                 </div>
@@ -89,7 +199,7 @@ const Keluhan = () => {
               />
               <Button
                 placeholder="Daftar"
-                onClick={() => alert("SABAR BANG BELUM JADI")}
+                onClick={handleAutoAssign}
                 customClass="text-[14px] px-[20px] py-[10px]"
               />
             </Modal.Footer>
@@ -140,7 +250,7 @@ const Keluhan = () => {
           </div>
           <div className="flex justify-end gap-[30px] mb-[15px]">
             <Button placeholder="Kembali" onClick={handleLogout} isCancel />
-            <Button placeholder="Daftar" onClick={handleRegistration} />
+            <Button placeholder="Daftar" onClick={handleNextPage} />
           </div>
         </div>
       </FormLayout>
