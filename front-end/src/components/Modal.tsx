@@ -56,11 +56,14 @@ interface IHeaderProps {
   title: JSX.Element | JSX.Element[] | string | React.ReactNode;
   isCancel?: boolean;
   onClose?: () => void;
+  customClass?: string;
 }
 
-const Header = ({ title, isCancel }: IHeaderProps) => {
+const Header = ({ title, isCancel, customClass }: IHeaderProps) => {
   return (
-    <div className="flex items-center bg-blue-primary justify-center">
+    <div
+      className={`flex items-center bg-blue-primary justify-center ${customClass}`}
+    >
       <div className="py-[12px] px-[20px]">
         <p className="text-light-primary font-semibold">{title}</p>
       </div>
@@ -71,10 +74,11 @@ const Header = ({ title, isCancel }: IHeaderProps) => {
 
 interface IBodyProps {
   children: JSX.Element | JSX.Element[] | string | React.ReactNode;
+  customClass?: string;
 }
 
-const Body = ({ children }: IBodyProps) => {
-  return <div className="px-[45px] py-[30px]">{children}</div>;
+const Body = ({ children, customClass }: IBodyProps) => {
+  return <div className={`px-[45px] py-[30px] ${customClass}`}>{children}</div>;
 };
 
 interface IFooterProps {

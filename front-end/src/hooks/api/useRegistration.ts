@@ -33,3 +33,12 @@ export const useCreateRegistration = () => {
     },
   });
 };
+
+export const useDeleteRegistrationById = () => {
+  return useMutation<IPendaftaran>({
+    mutationFn: async (id: string) => {
+      const response = await axios.delete(`/Pendaftaran/${id}`);
+      return response.data;
+    },
+  });
+};

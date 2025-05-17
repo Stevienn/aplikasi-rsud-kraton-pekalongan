@@ -1,4 +1,4 @@
-import { IDoctor } from "@/interface/doctorInterface";
+import { IDoctor, IDoctorSpc } from "@/interface/doctorInterface";
 import axios from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -7,6 +7,16 @@ export const useGetDoctors = () => {
     queryKey: ["doctors"],
     queryFn: async () => {
       const response = await axios.get("/Dokter");
+      return response.data;
+    },
+  });
+};
+
+export const useGetSpecialistDoctors = () => {
+  return useQuery<IDoctorSpc[]>({
+    queryKey: ["specialistdoctors"],
+    queryFn: async () => {
+      const response = await axios.get("/DokterSpesialis");
       return response.data;
     },
   });

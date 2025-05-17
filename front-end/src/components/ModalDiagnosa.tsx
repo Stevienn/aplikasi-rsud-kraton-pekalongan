@@ -2,15 +2,15 @@ import InputField from "./form/InputField";
 import Modal from "./Modal";
 import Button from "./form/Button";
 import { memo, useState } from "react";
-import {
-  Autocomplete,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 import { useGetICD } from "@/hooks/api/useICD";
 import { useGetRegistrationById } from "@/hooks/api/useRegistration";
+import {
+  useCreateRekapMedis,
+  useGetRekapMedis,
+  useUpdateRekapMedis,
+} from "@/hooks/api/useRekapMedis";
+import { useCreateHistory } from "@/hooks/api/useHistory";
 
 interface IModalDiagnosa {
   dataPatient: any;
@@ -18,6 +18,9 @@ interface IModalDiagnosa {
   diagnosaSub: string;
   setDiagnosaSub: (value: string) => void;
   closeModal: () => void;
+  date: string;
+  specialization: string;
+  dataDoctor: any;
 }
 
 const ModalDiagnosa = ({
@@ -26,12 +29,19 @@ const ModalDiagnosa = ({
   diagnosaSub,
   setDiagnosaSub,
   closeModal,
+  date,
+  specialization,
+  dataDoctor,
 }: IModalDiagnosa) => {
   const [selectedPrimary, setSelectedPrimary] = useState();
   const [selectedSecondary, setSelectedSecondary] = useState();
 
   const { data: ICD } = useGetICD();
-  const { data: regisData } = useGetRegistrationById(dataPatient.ID_BPJS);
+  const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
+
+  const createRekap = useCreateRekapMedis();
+  const createHistory = useCreateHistory();
+  const updateRekapMedis = useUpdateRekapMedis();
 
   const ICDComponent = ({ selected, setSelected }) => {
     return (
@@ -39,7 +49,9 @@ const ModalDiagnosa = ({
         <Autocomplete
           fullWidth
           options={ICD}
+          value={selected}
           getOptionLabel={(option) => `${option.kode} ${option.nama_diagnosa}`}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           onChange={(event, value) => setSelected(value)}
           renderInput={(params) => (
             <TextField
@@ -52,9 +64,67 @@ const ModalDiagnosa = ({
       </div>
     );
   };
+
+  const handleSubmit = async () => {
+    if (diagnosaSub === "") {
+      alert("Diagnosa subjektif harus diisi !");
+      return;
+    }
+    if (selectedPrimary === undefined) {
+      alert("Diagnosa primary harus dipilih !");
+      return;
+    }
+    try {
+      // Check Pasien
+      let pasienInRekap = rekapData?.find(
+        (r) => r.data_pasien?.ID_BPJS === dataPatient.ID_BPJS
+      );
+
+      if (!pasienInRekap) {
+        const createdRekap = await createRekap.mutateAsync({
+          data_pasien_id: dataPatient.ID_BPJS,
+          history_ids: [],
+        });
+        pasienInRekap = createdRekap;
+        await refetchRekapMedis();
+      }
+
+      const newHistory = {
+        ...(specialization
+          ? { data_dokter_spesialis_id: dataDoctor.id }
+          : { data_dokter_umum_id: dataDoctor.id }),
+        diagnosa_primary_id: selectedPrimary.id,
+        diagnosa_secondary_id: selectedSecondary?.id,
+        tanggal_konsultasi: date,
+        keluhan: keluhan,
+        diagnosa_sub: diagnosaSub,
+      };
+      const createdHistory = await createHistory.mutateAsync(newHistory);
+
+      const existingIds = pasienInRekap?.history?.map((h) => h.id || []);
+
+      const updatedHistoryIds = [...(existingIds || []), createdHistory.id];
+
+      await updateRekapMedis.mutateAsync({
+        id: dataPatient.ID_BPJS,
+        data: { history_ids: updatedHistoryIds },
+      });
+
+      closeModal();
+    } catch (error) {
+      console.error(error);
+
+      alert("Terjadi kesalahan saat menyimpan data.");
+    }
+  };
+
   return (
-    <Modal width="w-[1000px]" customClass="rounded-[40px] px-[80px]">
-      <Modal.Body>
+    <Modal width="w-[1000px]" customClass="rounded-[40px]">
+      <Modal.Header
+        title="Kirim Diagnosa"
+        customClass="rounded-t-[40px]"
+      ></Modal.Header>
+      <Modal.Body customClass="mx-[50px]">
         <>
           <InputField
             name="Nama (Sesuai KTP)"
@@ -107,7 +177,7 @@ const ModalDiagnosa = ({
       </Modal.Body>
       <Modal.Footer>
         <Button placeholder="Kembali" onClick={closeModal} isCancel />
-        <Button placeholder="Kirim" onClick={closeModal} />
+        <Button placeholder="Kirim" onClick={handleSubmit} />
       </Modal.Footer>
     </Modal>
   );
