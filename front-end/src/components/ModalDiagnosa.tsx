@@ -4,13 +4,17 @@ import Button from "./form/Button";
 import { memo, useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useGetICD } from "@/hooks/api/useICD";
-import { useGetRegistrationById } from "@/hooks/api/useRegistration";
+import {
+  useDeleteRegistrationById,
+  useGetRegistrationById,
+} from "@/hooks/api/useRegistration";
 import {
   useCreateRekapMedis,
   useGetRekapMedis,
   useUpdateRekapMedis,
 } from "@/hooks/api/useRekapMedis";
 import { useCreateHistory } from "@/hooks/api/useHistory";
+import { useUpdateUser } from "@/hooks/api/useUser";
 
 interface IModalDiagnosa {
   dataPatient: any;
@@ -21,6 +25,7 @@ interface IModalDiagnosa {
   date: string;
   specialization: string;
   dataDoctor: any;
+  refetchDoctor: any;
 }
 
 const ModalDiagnosa = ({
@@ -32,6 +37,7 @@ const ModalDiagnosa = ({
   date,
   specialization,
   dataDoctor,
+  refetchDoctor,
 }: IModalDiagnosa) => {
   const [selectedPrimary, setSelectedPrimary] = useState();
   const [selectedSecondary, setSelectedSecondary] = useState();
@@ -39,9 +45,12 @@ const ModalDiagnosa = ({
   const { data: ICD } = useGetICD();
   const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
 
+  const deleteRegis = useDeleteRegistrationById();
+
   const createRekap = useCreateRekapMedis();
   const createHistory = useCreateHistory();
   const updateRekapMedis = useUpdateRekapMedis();
+  const updateUser = useUpdateUser();
 
   const ICDComponent = ({ selected, setSelected }) => {
     return (
@@ -110,6 +119,14 @@ const ModalDiagnosa = ({
         data: { history_ids: updatedHistoryIds },
       });
 
+      await deleteRegis.mutateAsync(dataPatient.ID_BPJS);
+
+      await updateUser.mutateAsync({
+        id: dataPatient.ID_BPJS,
+        data: { nomor_urut: null },
+      });
+
+      refetchDoctor();
       closeModal();
     } catch (error) {
       console.error(error);

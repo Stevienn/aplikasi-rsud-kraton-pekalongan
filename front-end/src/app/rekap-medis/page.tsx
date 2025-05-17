@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import PortalDoctorComponent from "@/components/PortalDoctorComponent";
 import { getUser } from "@/api/user";
-import { IDoctor, IDoctorSpc, IUserDoctor } from "@/interface/doctorInterface";
 import AdminHeader from "@/components/AdminHeader";
-import { useRouter } from "next/navigation";
+import RekapMedisComponent from "@/components/RekapMedisComponent";
 import {
   useGetDoctorById,
   useGetSpecialistDoctorsById,
 } from "@/hooks/api/useDoctor";
+import { IUserDoctor } from "@/interface/doctorInterface";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const PortalDokter = () => {
+const RekapMedis = () => {
   const [doctorData, setDoctorData] = useState<IUserDoctor | null>(null);
   const router = useRouter();
 
@@ -27,26 +27,19 @@ const PortalDokter = () => {
     fetchUserData();
   }, []);
 
-  const {
-    data: doctor,
-    isLoading: isLoadingDoctor,
-    refetch: refetchUmum,
-  } = useGetDoctorById(doctorData?.user.id, {
-    enabled: !!doctorData && !doctorData.user.spesialization,
-  });
+  const { data: doctor, isLoading: isLoadingDoctor } = useGetDoctorById(
+    doctorData?.user.id,
+    {
+      enabled: !!doctorData && !doctorData.user.spesialization,
+    }
+  );
 
-  const {
-    data: doctorSpc,
-    isLoading: isLoadingDoctorSpc,
-    refetch: refetchSpc,
-  } = useGetSpecialistDoctorsById(doctorData?.user.id, {
-    enabled: !!doctorData && !!doctorData.user.spesialization,
-  });
+  const { data: doctorSpc, isLoading: isLoadingDoctorSpc } =
+    useGetSpecialistDoctorsById(doctorData?.user.id, {
+      enabled: !!doctorData && !!doctorData.user.spesialization,
+    });
 
   const finalDoctor = doctorData?.user.spesialization ? doctorSpc : doctor;
-  const finalRefetch = doctorData?.user.spesialization
-    ? refetchSpc
-    : refetchUmum;
 
   const loading = doctorData === null || isLoadingDoctor || isLoadingDoctorSpc;
 
@@ -67,20 +60,19 @@ const PortalDokter = () => {
     );
 
   console.log("Final doctor data:", finalDoctor);
-
   return (
     <div>
       <AdminHeader
         name={doctorData.user.nama_dokter}
         image={doctorData.user.image_dokter}
       />
-      <PortalDoctorComponent
-        doctorData={doctorData?.user}
+      <RekapMedisComponent
+        id={doctorData.user.id}
+        specialization={doctorData.user.spesialization}
         doctor={finalDoctor}
-        refetchDoctor={finalRefetch}
       />
     </div>
   );
 };
 
-export default PortalDokter;
+export default RekapMedis;

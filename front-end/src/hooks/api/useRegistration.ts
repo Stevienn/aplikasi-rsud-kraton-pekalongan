@@ -35,9 +35,9 @@ export const useCreateRegistration = () => {
 };
 
 export const useDeleteRegistrationById = () => {
-  return useMutation<IPendaftaran>({
+  return useMutation<IPendaftaran, Error, string>({
     mutationFn: async (id: string) => {
-      const response = await axios.delete(`/Pendaftaran/${id}`);
+      const response = await axios.delete(`/Pendaftaran/${id}/`);
       return response.data;
     },
   });

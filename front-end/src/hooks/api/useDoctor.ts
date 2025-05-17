@@ -1,6 +1,11 @@
 import { IDoctor, IDoctorSpc } from "@/interface/doctorInterface";
 import axios from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 
 export const useGetDoctors = () => {
   return useQuery<IDoctor[]>({
@@ -22,7 +27,10 @@ export const useGetSpecialistDoctors = () => {
   });
 };
 
-export const useGetDoctorById = (id: number) => {
+export const useGetDoctorById = (
+  id: number,
+  options?: UseQueryOptions<IDoctor>
+) => {
   return useQuery<IDoctor>({
     queryKey: ["doctor", id],
     queryFn: async () => {
@@ -30,6 +38,22 @@ export const useGetDoctorById = (id: number) => {
       return response.data;
     },
     enabled: !!id,
+    ...options,
+  });
+};
+
+export const useGetSpecialistDoctorsById = (
+  id: number,
+  options?: UseQueryOptions<IDoctorSpc>
+) => {
+  return useQuery<IDoctorSpc>({
+    queryKey: ["specialistdoctor", id],
+    queryFn: async () => {
+      const response = await axios.get(`/DokterSpesialis/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+    ...options,
   });
 };
 
