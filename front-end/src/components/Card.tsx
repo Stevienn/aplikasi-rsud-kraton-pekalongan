@@ -92,8 +92,6 @@ const Card = ({
             [];
           const updatedIds = [...existingIds, newRegis.data_pasien_id];
 
-          console.log("updated", updatedIds);
-
           updateSchedule({
             id: getSession.id,
             data: {

@@ -1,4 +1,4 @@
-import { IHistory, IRekapMedis } from "@/interface/rekapMedisInterface";
+import { IRekapMedis } from "@/interface/rekapMedisInterface";
 import axios from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -9,6 +9,17 @@ export const useGetRekapMedis = () => {
       const response = await axios.get("/RekapMedis");
       return response.data;
     },
+  });
+};
+
+export const useGetRekapMedisById = (id: string) => {
+  return useQuery<IRekapMedis>({
+    queryKey: ["rekapMedis", id],
+    queryFn: async () => {
+      const response = await axios.get(`/RekapMedis/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
   });
 };
 
