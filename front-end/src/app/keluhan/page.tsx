@@ -86,12 +86,11 @@ const Keluhan = () => {
       sesi_praktek_dokter: selectedSession.jam_sesi,
     };
     createRegis.mutate(newRegis, {
-      onSuccess: (createdData) => {
-        const newRegisId = createdData.id;
-
+      onSuccess: () => {
         const existingIds =
-          selectedSession.data_pendaftaran.map((d) => d.id) || [];
-        const updatedIds = [...existingIds, newRegisId];
+          selectedSession.data_pendaftaran.map((d) => d.data_pasien.ID_BPJS) ||
+          [];
+        const updatedIds = [...existingIds, newRegis.data_pasien_id];
 
         updateSchedule({
           id: selectedSession.id,

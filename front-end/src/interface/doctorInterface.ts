@@ -5,7 +5,7 @@ interface ISession {
   jam_sesi: string;
   jam_total: number;
   data_pendaftaran: IPendaftaran[];
-  data_pendaftaran_ids: number[];
+  data_pendaftaran_ids: string[];
 }
 
 interface ISchedule {
@@ -23,8 +23,18 @@ interface IDoctor {
   schedule_dokter: ISchedule[];
 }
 
+interface IDoctorSpc {
+  id: number;
+  nama_dokter: string;
+  image_dokter: string;
+  email_dokter: string;
+  password_dokter: string;
+  spesialization: string;
+  schedule_dokter: ISchedule[];
+}
+
 interface IUserDoctor {
   user: IDoctor;
 }
 
-export type { ISchedule, IDoctor, ISession, IUserDoctor };
+export type { ISchedule, IDoctor, ISession, IUserDoctor, IDoctorSpc };

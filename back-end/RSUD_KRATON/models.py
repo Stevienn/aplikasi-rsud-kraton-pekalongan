@@ -1,7 +1,7 @@
 from django.db import models
 
 #Create your models here.,
-class pasien(models.Model):
+class Pasien(models.Model):
     ID_BPJS = models.CharField(max_length=13,primary_key=True)
     nama = models.CharField(max_length=50)
     jenis_kelamin = models.CharField(max_length=10)
@@ -14,7 +14,7 @@ class pasien(models.Model):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
 
 class Pendaftaran(models.Model):
-    data_pasien = models.ForeignKey(pasien, on_delete=models.CASCADE, related_name='id_bpjs_set')
+    data_pasien = models.OneToOneField(Pasien, primary_key=True, on_delete=models.CASCADE, related_name='id_bpjs_set')
     tanggal_konsultasi = models.DateField()
     keluhan = models.CharField(max_length=100)
     nama_dokter = models.CharField(max_length=50)
@@ -49,15 +49,15 @@ class Dokter(models.Model):
         return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}")
 
 class Dokter_spesialis(models.Model):
-    nama_dokter_spc = models.CharField(max_length=50)
-    password_dokter_spc = models.CharField(max_length=20)
-    email_dokter_spc = models.CharField(max_length=50)
+    nama_dokter = models.CharField(max_length=50)
+    password_dokter = models.CharField(max_length=20)
+    email_dokter = models.CharField(max_length=50)
     spesialization = models.CharField(max_length=100)
-    image_dokter_spc = models.CharField(max_length=100)
-    schedule_dokter_spc = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_spc_set')
+    image_dokter = models.CharField(max_length=100)
+    schedule_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_spc_set')
 
     def __str__(self):
-        return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter_spc}, Spesialis  : {self.spesialization}")
+        return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}, Spesialis  : {self.spesialization}")
 
 class perawat(models.Model):
     #id_perawat = models.IntegerField()
@@ -75,21 +75,18 @@ class ICD(models.Model):
     def __str__(self):
         return (f'id : {self.id}, Kode : {self.kode}, Diagnosa : {self.nama_diagnosa}')
 
-# class Diagnosa(models.Model):
-#     data_pendaftaran = models.ForeignKey(Pendaftaran, on_delete=models.CASCADE, related_name='is_pendaftaran_set')
-#     diagnosa_subjektif = models.CharField(max_length=100)
-#     diagnosa_icd_1 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_1_set')
-#     diagnosa_icd_2 = models.ForeignKey(ICD, on_delete=models.CASCADE,related_name='diagnosa_icd_2_set')
-
-class history(models.Model):
+class History(models.Model):
     tanggal_konsultasi = models.DateField()
     keluhan = models.CharField(max_length=100)
     diagnosa_sub = models.CharField(max_length=200)
     diagnosa_primary = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='diagnosa_primary_set')
-    diagnosa_secondary = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='diagnosa_secondary_set', blank=True)
-    
+    diagnosa_secondary = models.ForeignKey(ICD, on_delete=models.CASCADE, related_name='diagnosa_secondary_set', blank=True, null=True)
+    Dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='dokter_umum_set', blank=True, null=True)
+    Dokter_spesialis = models.ForeignKey(Dokter_spesialis, on_delete=models.CASCADE, related_name='dokter_spesialis_set', blank=True, null=True)
+
 class rekap_medis(models.Model):
-    ID_BPJS = models.ForeignKey(pasien, primary_key=True, on_delete=models.CASCADE, related_name='pasien_set')
-    id_dokter_umum = models.ForeignKey(Dokter, on_delete=models.CASCADE, related_name='dokter_umum_set', blank=True)
-    id_dokter_spesialis = models.ForeignKey(Dokter_spesialis, on_delete=models.CASCADE, related_name='dokter_spesialis_set', blank=True)
-    history = models.ManyToManyField(history, related_name='history_set')
+    ID_BPJS = models.ForeignKey(Pasien, primary_key=True, on_delete=models.CASCADE, related_name='pasien_set')
+    history = models.ManyToManyField(History, related_name='history_set')
+
+    def str(self):
+        return (f'id : {self.ID_BPJS}')

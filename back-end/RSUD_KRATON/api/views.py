@@ -17,7 +17,7 @@ class IcdViewSet(viewsets.ModelViewSet):
     serializer_class = IcdSerializer
 
 class PasienViewSet(viewsets.ModelViewSet):
-    queryset = pasien.objects.all()
+    queryset = Pasien.objects.all()
     serializer_class = PasienSerializer
     
 class HariPraktekViewSet(viewsets.ModelViewSet):
@@ -42,7 +42,7 @@ class PendaftaranViewSet(viewsets.ModelViewSet):
 #     serializer_class = DiagnosaSerializer
 
 class HistoryViewSet(viewsets.ModelViewSet):
-    queryset = history.objects.all()
+    queryset = History.objects.all()
     serializer_class = HistorySerializer
 
 class RekapMedisViewSet(viewsets.ModelViewSet):

@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 import { redirect, useRouter } from "next/navigation";
 
 import { login, loginDoctor } from "./lib";
-import { useGetDoctors } from "@/hooks/api/useDoctor";
+import { useGetDoctors, useGetSpecialistDoctors } from "@/hooks/api/useDoctor";
 import { useGetUsers } from "@/hooks/api/useUser";
 import { useGetRegistration } from "@/hooks/api/useRegistration";
 
@@ -21,9 +21,9 @@ interface ILoginPageProps {
 
 const LoginPage = ({ isAdmin }: ILoginPageProps) => {
   // const dataPatient = dummyPatient;
-  const router = useRouter();
   const { data: dataPatient } = useGetUsers();
   const { data: dataDoctorUmum } = useGetDoctors();
+  const { data: dataDoctorSpc } = useGetSpecialistDoctors();
 
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
@@ -58,6 +58,10 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
       (data) => input == data.email_dokter
     );
 
+    const doctorDataSpcValidate = dataDoctorSpc?.find(
+      (data) => input == data.email_dokter
+    );
+
     if (doctorData) {
       if (
         input == doctorData.email_dokter &&
@@ -70,7 +74,19 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
       ) {
         setIsWarningValidate("Password yang anda masukkan salah");
       }
-    } else if (!doctorData) {
+    } else if (doctorDataSpcValidate) {
+      if (
+        input == doctorDataSpcValidate.email_dokter &&
+        validate == doctorDataSpcValidate.password_dokter
+      ) {
+        await loginDoctor({ doctorData: doctorDataSpcValidate });
+      } else if (
+        input == doctorDataSpcValidate.email_dokter &&
+        validate !== doctorDataSpcValidate.password_dokter
+      ) {
+        setIsWarningValidate("Password yang anda masukkan salah");
+      }
+    } else if (!doctorData || !doctorDataSpcValidate) {
       setIsWarningInput("Email yang anda masukkan salah !");
     }
   };

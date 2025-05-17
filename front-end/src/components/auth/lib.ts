@@ -58,6 +58,7 @@ export async function loginDoctor({ doctorData }: any) {
     email_dokter: doctorData.email_dokter,
     image_dokter: doctorData.image_dokter,
     schedule_dokter: doctorData.schedule_dokter,
+    spesialization: doctorData?.spesialization,
     role: "dokter",
   };
   await createSession({ user: doctor });

@@ -1,19 +1,17 @@
 "use client";
 
-import dummyDoctorUmum from "@/components/assets/dummyDoctorUmum";
-import dummyDoctorSpesialis from "@/components/assets/dummyDoctorSpesialis";
-
 import { getUser } from "@/api/user";
 import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
-import { IUser, IUserData } from "@/interface/patientInterface";
-import { useGetDoctors } from "@/hooks/api/useDoctor";
+import { IUserData } from "@/interface/patientInterface";
+import { useGetDoctors, useGetSpecialistDoctors } from "@/hooks/api/useDoctor";
 
 const PilihDokter = () => {
   const [userData, setUserData] = useState<IUserData | null>(null);
   const { data: doctorUmum } = useGetDoctors();
+  const { data: doctorSpesialis } = useGetSpecialistDoctors();
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await getUser();
@@ -21,8 +19,6 @@ const PilihDokter = () => {
     };
     fetchUserData();
   }, []);
-
-  console.log(userData);
 
   return (
     <div className="font-inria-sans pb-[130px]">
@@ -42,17 +38,14 @@ const PilihDokter = () => {
         Dokter Spesialis
       </h1>
       <div className="grid gap-[85px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[35px] mx-[45px]">
-        {/* {doctorSpesialis.map((doctor) => (
+        {doctorSpesialis?.map((doctor) => (
           <Card
-            key={doctor.id}
-            image={doctor.image}
-            name={doctor.name}
-            categories={doctor.specialty}
-            schedule={doctor.schedule}
-            bpjsId={userData?.user.id}
-            customCategoryClass="w-[180px]"
+            userData={userData}
+            doctorData={doctor}
+            categories={doctor.spesialization}
+            customCategoryClass="max-w-[140px]"
           />
-        ))} */}
+        ))}
       </div>
 
       <Footer isFull={true} />

@@ -73,6 +73,8 @@ const CustomTable = ({ doctorData }: any) => {
 
   const disabledDate = disabled.add(7, "day");
 
+  console.log(doctorData);
+
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -163,10 +165,13 @@ const CustomTable = ({ doctorData }: any) => {
       {isModal && (
         <ModalDiagnosa
           dataPatient={dataPatient}
+          dataDoctor={doctorData}
           keluhan={keluhan}
           diagnosaSub={diagnosaSub}
           setDiagnosaSub={setDiagnosaSub}
           closeModal={() => setIsModal(false)}
+          date={selectedDate.format("YYYY-MM-DD")}
+          specialization={doctorData.specialization}
         />
       )}
       <div className="mb-[20px] flex justify-between">

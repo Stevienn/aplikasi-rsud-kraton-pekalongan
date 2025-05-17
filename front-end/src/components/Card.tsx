@@ -82,16 +82,17 @@ const Card = ({
         sesi_praktek_dokter: selectedSession,
       };
       createRegis.mutate(newRegis, {
-        onSuccess: (createdData) => {
-          const newRegisId = createdData.id;
-
+        onSuccess: () => {
           const getSession = getDay?.hari_praktek_set.find(
             (sesi) => sesi.jam_sesi === selectedSession
           );
 
           const existingIds =
-            getSession?.data_pendaftaran.map((d) => d.id) || [];
-          const updatedIds = [...existingIds, newRegisId];
+            getSession?.data_pendaftaran.map((d) => d.data_pasien.ID_BPJS) ||
+            [];
+          const updatedIds = [...existingIds, newRegis.data_pasien_id];
+
+          console.log("updated", updatedIds);
 
           updateSchedule({
             id: getSession.id,
