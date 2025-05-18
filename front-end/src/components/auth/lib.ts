@@ -63,3 +63,13 @@ export async function loginDoctor({ doctorData }: any) {
   };
   await createSession({ user: doctor });
 }
+
+export async function loginAdmin({ adminData }: any) {
+  const admin = {
+    id: adminData.id,
+    nama_perawat: adminData.nama_perawat,
+    email_perawat: adminData.email_perawat,
+    role: "admin",
+  };
+  await createSession({ user: admin });
+}

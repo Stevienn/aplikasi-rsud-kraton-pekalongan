@@ -53,7 +53,11 @@ const PortalDokter = () => {
   if (loading)
     return (
       <div>
-        <AdminHeader name="Loading..." image="/images/no_profile.png" />
+        <AdminHeader
+          name="Loading..."
+          image="/images/no_profile.png"
+          linkName1="Rekap Medis"
+        />
         Loading doctor data...
       </div>
     );
@@ -61,7 +65,11 @@ const PortalDokter = () => {
   if (!doctorData)
     return (
       <div>
-        <AdminHeader name="Loading..." image="/images/no_profile.png" />
+        <AdminHeader
+          name="Loading..."
+          image="/images/no_profile.png"
+          linkName1="Rekap Medis"
+        />
         Loading user data...
       </div>
     );
@@ -73,6 +81,7 @@ const PortalDokter = () => {
       <AdminHeader
         name={doctorData.user.nama_dokter}
         image={doctorData.user.image_dokter}
+        linkName1="Rekap Medis"
       />
       <PortalDoctorComponent
         doctorData={doctorData?.user}

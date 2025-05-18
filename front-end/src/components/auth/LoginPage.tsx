@@ -8,12 +8,11 @@ import InputField from "@/components/form/InputField";
 import Button from "@/components/form/Button";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { redirect, useRouter } from "next/navigation";
 
-import { login, loginDoctor } from "./lib";
+import { login, loginAdmin, loginDoctor } from "./lib";
 import { useGetDoctors, useGetSpecialistDoctors } from "@/hooks/api/useDoctor";
 import { useGetUsers } from "@/hooks/api/useUser";
-import { useGetRegistration } from "@/hooks/api/useRegistration";
+import { useGetAdmin } from "@/hooks/api/useAdmin";
 
 interface ILoginPageProps {
   isAdmin?: boolean;
@@ -24,6 +23,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
   const { data: dataPatient } = useGetUsers();
   const { data: dataDoctorUmum } = useGetDoctors();
   const { data: dataDoctorSpc } = useGetSpecialistDoctors();
+  const { data: dataAdmin } = useGetAdmin();
 
   const [input, setInput] = useState("");
   const [validate, setValidate] = useState("");
@@ -62,6 +62,8 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
       (data) => input == data.email_dokter
     );
 
+    const adminData = dataAdmin?.find((data) => input == data.email_perawat);
+
     if (doctorData) {
       if (
         input == doctorData.email_dokter &&
@@ -86,7 +88,19 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
       ) {
         setIsWarningValidate("Password yang anda masukkan salah");
       }
-    } else if (!doctorData || !doctorDataSpcValidate) {
+    } else if (adminData) {
+      if (
+        input == adminData.email_perawat &&
+        validate == adminData.password_perawat
+      ) {
+        await loginAdmin({ adminData: adminData });
+      } else if (
+        input == adminData.email_perawat &&
+        validate !== adminData.password_perawat
+      ) {
+        setIsWarningValidate("Password yang anda masukkan salah");
+      }
+    } else if (!doctorData || !doctorDataSpcValidate || !adminData) {
       setIsWarningInput("Email yang anda masukkan salah !");
     }
   };

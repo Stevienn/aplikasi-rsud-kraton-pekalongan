@@ -41,6 +41,7 @@ const ModalDiagnosa = ({
 }: IModalDiagnosa) => {
   const [selectedPrimary, setSelectedPrimary] = useState();
   const [selectedSecondary, setSelectedSecondary] = useState();
+  const [isModalConfirm, setIsModalConfirm] = useState(false);
 
   const { data: ICD } = useGetICD();
   const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
@@ -125,9 +126,9 @@ const ModalDiagnosa = ({
         id: dataPatient.ID_BPJS,
         data: { nomor_urut: null },
       });
+      setIsModalConfirm(true);
 
       refetchDoctor();
-      closeModal();
     } catch (error) {
       console.error(error);
 
@@ -135,68 +136,99 @@ const ModalDiagnosa = ({
     }
   };
 
+  console.log(isModalConfirm);
+
   return (
-    <Modal width="w-[1000px]" customClass="rounded-[40px]">
-      <Modal.Header
-        title="Kirim Diagnosa"
-        customClass="rounded-t-[40px]"
-      ></Modal.Header>
-      <Modal.Body customClass="mx-[50px]">
-        <>
-          <InputField
-            name="Nama (Sesuai KTP)"
-            type="text"
-            customClass="mb-[10px]"
-            inputWidth="w-full"
-            value={dataPatient?.nama}
-            isDisabled
-          />
-          <InputField
-            name="Jenis Kelamin"
-            type="string"
-            customClass="mb-[10px]"
-            inputWidth="w-full"
-            value={dataPatient?.jenis_kelamin}
-            isDisabled
-          />
-          <p className="text-gray-600 font-semibold mb-[8px]">Keluhan</p>
-          <textarea
-            name="Keluhan"
-            className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-full "
-            value={keluhan}
-            disabled
-          />
-          <p className="text-gray-600 font-semibold mb-[8px]">
-            Diagnosa Subjektif
-          </p>
-          <textarea
-            name="Diagnosa Subjektif"
-            className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-full "
-            placeholder="Input diagnosa subjektif disini ..."
-            value={diagnosaSub}
-            onChange={(e) => setDiagnosaSub(e.target.value)}
-          />
-          <p className="text-gray-600 font-semibold mb-[8px]">
-            Diagnosa Primary
-          </p>
-          <ICDComponent
-            selected={selectedPrimary}
-            setSelected={setSelectedPrimary}
-          />
-          <p className="text-gray-600 font-semibold mb-[8px]">
-            Diagnosa Secondary
-          </p>
-          <ICDComponent
-            selected={selectedSecondary}
-            setSelected={setSelectedSecondary}
-          />
-        </>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button placeholder="Kembali" onClick={closeModal} isCancel />
-        <Button placeholder="Kirim" onClick={handleSubmit} />
-      </Modal.Footer>
-    </Modal>
+    <>
+      {isModalConfirm && (
+        <Modal
+          onClose={() => {
+            setIsModalConfirm(false);
+            closeModal();
+          }}
+          width="w-[888px]"
+        >
+          <Modal.Header title="RSUD Kraton Pekalongan" />
+          <Modal.Body>
+            <div>
+              <p className="font-medium text-[18px]">
+                Diagnosa berhasil dikirim !
+              </p>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              placeholder="Kembali"
+              onClick={() => {
+                setIsModalConfirm(false);
+                closeModal();
+              }}
+            />
+          </Modal.Footer>
+        </Modal>
+      )}
+      <Modal width="w-[1000px]" customClass="rounded-[40px]">
+        <Modal.Header
+          title="Kirim Diagnosa"
+          customClass="rounded-t-[40px]"
+        ></Modal.Header>
+        <Modal.Body customClass="mx-[50px]">
+          <>
+            <InputField
+              name="Nama (Sesuai KTP)"
+              type="text"
+              customClass="mb-[10px]"
+              inputWidth="w-full"
+              value={dataPatient?.nama}
+              isDisabled
+            />
+            <InputField
+              name="Jenis Kelamin"
+              type="string"
+              customClass="mb-[10px]"
+              inputWidth="w-full"
+              value={dataPatient?.jenis_kelamin}
+              isDisabled
+            />
+            <p className="text-gray-600 font-semibold mb-[8px]">Keluhan</p>
+            <textarea
+              name="Keluhan"
+              className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-full "
+              value={keluhan}
+              disabled
+            />
+            <p className="text-gray-600 font-semibold mb-[8px]">
+              Diagnosa Subjektif
+            </p>
+            <textarea
+              name="Diagnosa Subjektif"
+              className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-full "
+              placeholder="Input diagnosa subjektif disini ..."
+              value={diagnosaSub}
+              onChange={(e) => setDiagnosaSub(e.target.value)}
+            />
+            <p className="text-gray-600 font-semibold mb-[8px]">
+              Diagnosa Primary
+            </p>
+            <ICDComponent
+              selected={selectedPrimary}
+              setSelected={setSelectedPrimary}
+            />
+            <p className="text-gray-600 font-semibold mb-[8px]">
+              Diagnosa Secondary
+            </p>
+            <ICDComponent
+              selected={selectedSecondary}
+              setSelected={setSelectedSecondary}
+            />
+          </>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button placeholder="Kembali" onClick={closeModal} isCancel />
+          <Button placeholder="Kirim" onClick={handleSubmit} />
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
