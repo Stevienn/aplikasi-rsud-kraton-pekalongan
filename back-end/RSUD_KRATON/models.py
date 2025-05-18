@@ -1,6 +1,13 @@
 from django.db import models
 
 #Create your models here.,
+class ICD(models.Model):
+    kode = models.CharField(max_length=20)
+    nama_diagnosa = models.CharField(max_length=100)
+
+    def __str__(self):
+        return (f'id : {self.id}, Kode : {self.kode}, Diagnosa : {self.nama_diagnosa}')
+    
 class Pasien(models.Model):
     ID_BPJS = models.CharField(max_length=13,primary_key=True)
     nama = models.CharField(max_length=50)
@@ -9,6 +16,7 @@ class Pasien(models.Model):
     nomor_HP = models.CharField(max_length=13)
     email_pasien = models.CharField(max_length=50)
     nomor_urut = models.IntegerField(null=True, blank=True)
+    diagnosa_icd = models.ForeignKey(ICD, on_delete=models.CASCADE, null=True, blank=True, related_name='pasien')
 
     def __str__(self):
         return (f"BPJS: {self.ID_BPJS}, Nama: {self.nama}, Jenis Kelamin: {self.jenis_kelamin}, TTL: {self.tanggal_lahir}, HP: {self.nomor_HP}, email: {self.email_pasien}")
@@ -67,13 +75,6 @@ class perawat(models.Model):
 
     def __str__(self):
         return (f"Perawat : {self.nama_perawat}")
-
-class ICD(models.Model):
-    kode = models.CharField(max_length=20)
-    nama_diagnosa = models.CharField(max_length=100)
-
-    def __str__(self):
-        return (f'id : {self.id}, Kode : {self.kode}, Diagnosa : {self.nama_diagnosa}')
 
 class History(models.Model):
     tanggal_konsultasi = models.DateField()

@@ -2,6 +2,9 @@ from rest_framework import viewsets
 from .serializers import *
 from ..models import *
 from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count
 # from .utils import get_icd_entity
 
 class DokterViewSet(viewsets.ModelViewSet):
@@ -49,9 +52,14 @@ class RekapMedisViewSet(viewsets.ModelViewSet):
     queryset = rekap_medis.objects.all()
     serializer_class = RekapMedisSerializer
 
-# def icd_lookup(request, code):
-#     try:
-#         data = get_icd_entity(code)
-#         return JsonResponse(data)
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
+class LaporanIcdView(APIView):
+    def get(self, request):
+        data = ICD.objects.annotate(jumlah_pasien=Count('pasien')).values('kode', 'nama_diagnosa', 'jumlah_pasien').order_by('-jumlah_pasien')[:10]
+        return Response(data)
+
+# class LaporanIcdViewSet(viewsets.ModelViewSet):
+#     queryset = Laporan_icd.objects.all()
+#     serializer_class = RekapMedisSerializer
+#     def get(self, request):
+#         data = rekap_medis.objects.annotate(jumlah_pasien=Count('pasien')).values('kode', 'nama_diagnosa', 'jumlah_pasien')
+#         return Response(data)
