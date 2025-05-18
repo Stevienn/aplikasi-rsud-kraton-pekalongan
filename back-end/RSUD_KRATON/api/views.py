@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
+from django.db.models.functions import TruncMonth
+from django.db.models.functions import ExtractMonth, ExtractYear
 # from .utils import get_icd_entity
 
 class DokterViewSet(viewsets.ModelViewSet):
@@ -59,26 +61,45 @@ class LaporanIcdView(APIView):
 
 class LaporanDokterView(APIView):
     def get(self, request):
-        dokter_umum_data = []
         
-        for dokter in Dokter.objects.all():
-            jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter).count()
-            dokter_umum_data.append({
-                'nama_dokter': dokter.nama_dokter,
-                'spesialisasi': 'Doker Umum',
-                'jumlah_pasien': jumlah_pasien
-            })
+        data = []
         
-        dokter_spesialis_data = []
-        for dokter in Dokter_spesialis.objects.all():
-            jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter).count()
-            dokter_spesialis_data.append({
-                'nama_dokter': dokter.nama_dokter,
-                'spesialisasi': dokter.spesialization,
-                'jumlah_pasien': jumlah_pasien
+        bulan_tahun_list = Pendaftaran.objects.annotate(
+            bulan = ExtractMonth('tanggal_konsultasi'),
+            tahun = ExtractYear('tanggal_konsultasi'),
+        ).values('bulan', 'tahun').distinct()
+        
+        for item in bulan_tahun_list:
+            bulan = item['bulan']
+            tahun = item['tahun']
+            
+            dokter_umum_data = []
+            
+            for dokter in Dokter.objects.all():
+                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan, tanggal_konsultasi__year=tahun).count()
+                
+                if jumlah_pasien  > 0:
+                    dokter_umum_data.append({
+                        'nama_dokter': dokter.nama_dokter,
+                        'spesialisasi': 'Doker Umum',
+                        'jumlah_pasien': jumlah_pasien
+                    })
+            
+            dokter_spesialis_data = []
+            for dokter in Dokter_spesialis.objects.all():
+                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan, tanggal_konsultasi__year=tahun).count()
+                
+                if jumlah_pasien > 0:
+                    dokter_spesialis_data.append({
+                        'nama_dokter': dokter.nama_dokter,
+                        'spesialisasi': dokter.spesialization,
+                        'jumlah_pasien': jumlah_pasien
+                    })
+            data.append({
+                'bulan': bulan,
+                'tahun': tahun,
+                'dokter_umum': dokter_umum_data,
+                'dokter_spesialis': dokter_spesialis_data
             })
 
-        return Response({
-            'dokter_umum': dokter_umum_data,
-            'dokter_spesialis': dokter_spesialis_data
-        })
+        return Response(data)
