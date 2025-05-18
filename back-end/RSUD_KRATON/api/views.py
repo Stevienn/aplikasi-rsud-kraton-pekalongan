@@ -57,9 +57,28 @@ class LaporanIcdView(APIView):
         data = ICD.objects.annotate(jumlah_pasien=Count('pasien')).values('kode', 'nama_diagnosa', 'jumlah_pasien').order_by('-jumlah_pasien')[:10]
         return Response(data)
 
-# class LaporanIcdViewSet(viewsets.ModelViewSet):
-#     queryset = Laporan_icd.objects.all()
-#     serializer_class = RekapMedisSerializer
-#     def get(self, request):
-#         data = rekap_medis.objects.annotate(jumlah_pasien=Count('pasien')).values('kode', 'nama_diagnosa', 'jumlah_pasien')
-#         return Response(data)
+class LaporanDokterView(APIView):
+    def get(self, request):
+        dokter_umum_data = []
+        
+        for dokter in Dokter.objects.all():
+            jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter).count()
+            dokter_umum_data.append({
+                'nama_dokter': dokter.nama_dokter,
+                'spesialisasi': 'Doker Umum',
+                'jumlah_pasien': jumlah_pasien
+            })
+        
+        dokter_spesialis_data = []
+        for dokter in Dokter_spesialis.objects.all():
+            jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter).count()
+            dokter_spesialis_data.append({
+                'nama_dokter': dokter.nama_dokter,
+                'spesialisasi': dokter.spesialization,
+                'jumlah_pasien': jumlah_pasien
+            })
+
+        return Response({
+            'dokter_umum': dokter_umum_data,
+            'dokter_spesialis': dokter_spesialis_data
+        })

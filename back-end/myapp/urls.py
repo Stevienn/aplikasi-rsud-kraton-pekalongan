@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from RSUD_KRATON.api.views import LaporanIcdView
+from RSUD_KRATON.api.views import LaporanIcdView, LaporanDokterView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('RSUD_KRATON.api.urls')),
-    path('api/laporan-icd/', LaporanIcdView.as_view(), name='laporan_icd')
+    path('api/laporan-icd/', LaporanIcdView.as_view(), name='laporan_icd'),
+    path('api/laporan-pengunjung/', LaporanDokterView.as_view(), name='laporan_pengunjung')
+    
 ]
