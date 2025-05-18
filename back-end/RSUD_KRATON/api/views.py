@@ -6,8 +6,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
-from django.db.models.functions import ExtractMonth, ExtractYear
-# from .utils import get_icd_entity
+from django.db.models.functions import ExtractMonth, ExtractYear, ExtractWeekDay
+from django.utils.timezone import now
+from datetime import timedelta
+import calendar
 
 class DokterViewSet(viewsets.ModelViewSet):
     queryset = Dokter.objects.all()
@@ -56,7 +58,42 @@ class RekapMedisViewSet(viewsets.ModelViewSet):
 
 class LaporanIcdView(APIView):
     def get(self, request):
-        data = ICD.objects.annotate(jumlah_pasien=Count('pasien')).values('kode', 'nama_diagnosa', 'jumlah_pasien').order_by('-jumlah_pasien')[:10]
+        data = []
+        
+        bulan_tahun_list = Pendaftaran.objects.annotate(
+            bulan = ExtractMonth('tanggal_konsultasi'),
+            tahun = ExtractYear('tanggal_konsultasi'),
+        ).values('bulan', 'tahun').distinct()
+        
+        for item in bulan_tahun_list:
+            bulan = item['bulan']
+            tahun = item['tahun']
+            
+            jumlah_icd = Pendaftaran.objects.filter(
+                tanggal_konsultasi__month=bulan, 
+                tanggal_konsultasi__year=tahun, 
+                diagnosa_icd__isnull=False
+            ).values(
+                'diagnosa_icd__kode', 
+                'diagnosa_icd__nama_diagnosa'
+            ).annotate(
+                jumlah_pasien=Count('data_pasien')
+            ).order_by('-jumlah_pasien')[:10]
+            
+            icd_list=[]
+            for icd in jumlah_icd:
+                icd_list.append({
+                    'kode': icd['diagnosa_icd__kode'],
+                    'nama_diagnosa': icd['diagnosa_icd__nama_diagnosa'],
+                    'jumlah_pasien': icd['jumlah_pasien']
+                })
+            
+            data.append({
+                'tahun': tahun,
+                'bulan': bulan,
+                'icd_list': icd_list
+            })
+        
         return Response(data)
 
 class LaporanDokterView(APIView):
@@ -103,3 +140,65 @@ class LaporanDokterView(APIView):
             })
 
         return Response(data)
+
+class LaporanPengunjungView(APIView):
+    def get(self, request):
+        #Rekap 7 Hari Terakhir
+        today = now().date()
+        tahun_ini = today.year
+        
+        start = today - timedelta(days=6)
+        minggu_qs = Pendaftaran.objects.filter(
+            tanggal_konsultasi__range=[start, today]
+        ).annotate(
+            weekday = ExtractWeekDay('tanggal_konsultasi')
+        ).values('weekday'). annotate(
+            jumlah = Count('data_pasien')
+        )
+        
+        nama_hari = {
+            1 : 'Senin',
+            2 : 'Selasa',
+            3 : 'Rabu',
+            4 : 'Kamis',
+            5 : 'Jumat',
+            6 : 'Sabtu',
+            7 : 'Minggu',
+        }
+        
+        rekap_7_hari = {nama: 0 for nama in nama_hari.values()}
+        
+        for item in minggu_qs:
+            hari = nama_hari.get(item['weekday'], 'Tidak Diketahui')
+            rekap_7_hari[hari] = item['jumlah']
+            
+            #Rekap Bulanan
+            bulanan_qs = Pendaftaran.objects.filter(
+                tanggal_konsultasi__year = tahun_ini
+            ).annotate(
+                bulan = ExtractMonth('tanggal_konsultasi')
+            ).values('bulan').annotate(
+                jumlah = Count('data_pasien')
+            )
+            
+        jumlah_pasien_bulanan = {calendar.month_name[i]: 0 for i in range(1,13)}
+        for item in bulanan_qs:
+            nama_bulan = calendar.month_name[item['bulan']]
+            jumlah_pasien_bulanan[nama_bulan] = item['jumlah']
+            
+        #Rekap Tahunan 
+        tahunan_qs = Pendaftaran.objects.annotate(
+            tahun = ExtractYear('tanggal_konsultasi')
+        ).values('tahun').annotate(
+            jumlah = Count('data_pasien')
+        )
+            
+        jumlah_pasien_tahunan = {}
+        for item in tahunan_qs:
+            jumlah_pasien_tahunan[str(item['tahun'])] = item['jumlah']
+            
+        return Response({
+            'rekap_7_hari_terakhir': rekap_7_hari,
+            'jumlah_pasien_bulanan': jumlah_pasien_bulanan,
+            'jumlah_pasien_tahunan': jumlah_pasien_tahunan
+        })
