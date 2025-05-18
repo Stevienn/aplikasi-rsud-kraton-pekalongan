@@ -114,9 +114,3 @@ class RekapMedisSerializer(serializers.ModelSerializer):
     class Meta:
         model = rekap_medis
         fields = ['data_pasien', 'data_pasien_id', 'history', 'history_ids']
-
-# class LaporanIcdSerializer(serializers.ModelSerializer):
-#     diagnosa_icd = IcdSerializer()
-#     class Meta:
-#         model = Laporan_icd
-#         fields = '__all__'
