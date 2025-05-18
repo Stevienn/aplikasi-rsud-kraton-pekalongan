@@ -12,7 +12,15 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 
-const CustomTable = ({ columns, rows, handleAction }: any) => {
+const CustomTable = ({
+  columns,
+  rows,
+  handleAction,
+}: {
+  columns: any;
+  rows: any;
+  handleAction?: any;
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -96,6 +104,9 @@ const CustomTable = ({ columns, rows, handleAction }: any) => {
                                   className="cursor-pointer"
                                 />
                               </Link>
+                            )}
+                            {column.id === "status" && (
+                              
                             )}
                             {value}
                           </TableCell>

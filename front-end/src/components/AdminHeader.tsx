@@ -9,10 +9,12 @@ const AdminHeader = ({
   name,
   image,
   slug,
+  linkName1,
 }: {
   name: string | undefined;
   image: string;
   slug?: string;
+  linkName1?: string;
 }) => {
   const pathname = usePathname();
 
@@ -32,7 +34,9 @@ const AdminHeader = ({
         <Link
           href="/portal-dokter"
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
-            pathname === "/portal-dokter" ? "underline font-medium" : ""
+            pathname === "/portal-dokter" || "/portal-admin"
+              ? "underline font-medium"
+              : ""
           }`}
         >
           Dashboard
@@ -45,7 +49,7 @@ const AdminHeader = ({
               : ""
           }`}
         >
-          Rekap Medis
+          {linkName1}
         </Link>
         <Link
           href="/rekap-medis"

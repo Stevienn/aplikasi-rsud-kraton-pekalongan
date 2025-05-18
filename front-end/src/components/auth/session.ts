@@ -16,6 +16,8 @@ export async function createSession({ user }: any) {
     } else {
       redirect("/konfirmasi");
     }
+  } else if (user.role === "admin") {
+    redirect("/portal-admin");
   }
 }
 

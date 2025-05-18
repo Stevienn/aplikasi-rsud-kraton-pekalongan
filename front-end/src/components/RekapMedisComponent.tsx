@@ -67,7 +67,7 @@ const RekapMedisComponent = ({ id, specialization, doctor }: any) => {
         onChange={(e) => setSearchTerm(e.target.value)}
         sx={{ mb: 3, backgroundColor: "white", width: 400 }}
       />
-      <CustomTable columns={columns} rows={filteredRows} RM />
+      <CustomTable columns={columns} rows={filteredRows} />
     </div>
   );
 };
