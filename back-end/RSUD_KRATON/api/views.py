@@ -10,6 +10,9 @@ from django.db.models.functions import ExtractMonth, ExtractYear, ExtractWeekDay
 from django.utils.timezone import now
 from datetime import timedelta
 import calendar
+from django.core.mail import send_mail
+from rest_framework.decorators import api_view
+from rest_framework import status
 
 class DokterViewSet(viewsets.ModelViewSet):
     queryset = Dokter.objects.all()
@@ -43,10 +46,6 @@ class PerawatViewSet(viewsets.ModelViewSet):
 class PendaftaranViewSet(viewsets.ModelViewSet):
     queryset = Pendaftaran.objects.all()
     serializer_class = PendaftaranSerializer
-
-# class DiagnosaViewSet(viewsets.ModelViewSet):
-#     queryset = Diagnosa.objects.all()
-#     serializer_class = DiagnosaSerializer
 
 class HistoryViewSet(viewsets.ModelViewSet):
     queryset = History.objects.all()
@@ -211,3 +210,50 @@ class LaporanPengunjungView(APIView):
             'jumlah_pasien_bulanan': jumlah_pasien_bulanan,
             'jumlah_pasien_tahunan': jumlah_pasien_tahunan
         })
+
+@api_view(['POST'])
+def api_kirim_email(request):
+    id_bpjs = request.data.get("id_bpjs")
+    if not id_bpjs:
+        return Response({"error": "id_bpjs harus disertakan"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        pasien = Pasien.objects.get(ID_BPJS=id_bpjs)
+
+        if not pasien.email_pasien:
+            return Response({"error": "Email pasien tidak tersedia"}, status=status.HTTP_400_BAD_REQUEST)
+
+        history = History.objects.filter(pasien=pasien).latest('tanggal_konsultasi')
+
+        diagnosa_primary = history.diagnosa_primary.nama_diagnosa if history.diagnosa_primary else "-"
+        diagnosa_secondary = history.diagnosa_secondary.nama_diagnosa if history.diagnosa_secondary else "-"
+
+        subject = f"Hasil Konsultasi Anda - {history.tanggal_konsultasi}"
+        message = f"""Halo {pasien.nama},
+
+Hasil konsultasi Anda pada {history.tanggal_konsultasi}:
+Keluhan: {history.keluhan}
+Diagnosa Utama: {diagnosa_primary}
+Diagnosa Sekunder: {diagnosa_secondary}
+
+Terima kasih telah berkonsultasi di klinik kami 🙏
+"""
+
+        send_mail(
+            subject,
+            message,
+            'bangtanviarta@gmail.com',  # Ganti dengan email kamu di settings.py
+            [pasien.email_pasien],
+            fail_silently=False,
+        )
+
+        return Response({"success": True, "message": "Email berhasil dikirim"}, status=status.HTTP_200_OK)
+
+    except Pasien.DoesNotExist:
+        return Response({"error": "Pasien tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+    except History.DoesNotExist:
+        return Response({"error": "Riwayat konsultasi tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({"error": f"Terjadi kesalahan: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
