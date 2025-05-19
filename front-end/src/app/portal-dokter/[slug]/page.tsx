@@ -9,21 +9,20 @@ import {
   useGetSpecialistDoctorsById,
 } from "@/hooks/api/useDoctor";
 import { useCreateHistory } from "@/hooks/api/useHistory";
-import { useGetICD } from "@/hooks/api/useICD";
 import {
   useDeleteRegistrationById,
   useGetRegistrationById,
 } from "@/hooks/api/useRegistration";
 import {
   useCreateRekapMedis,
-  useGetRekapMedis,
   useUpdateRekapMedis,
 } from "@/hooks/api/useRekapMedis";
 import { useUpdateUser } from "@/hooks/api/useUser";
 import { IUserDoctor } from "@/interface/doctorInterface";
-import { Autocomplete, TextField } from "@mui/material";
 import { redirect, useRouter } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
+import { AsyncPaginate } from "react-select-async-paginate";
+import axios from "@/lib/axios";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -69,8 +68,29 @@ const PortalDoctorSlug = ({ params }: Props) => {
   const [selectedSecondary, setSelectedSecondary] = useState();
   const [isModalConfirm, setIsModalConfirm] = useState(false);
 
-  const { data: ICD } = useGetICD();
-  const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
+  const loadOptions = async (searchQuery, loadedOptions, { page }) => {
+    console.log("searchQuery:", searchQuery); // debug cek apa query yang diterima
+    const response = await axios.get("/ICD", {
+      params: {
+        search: searchQuery,
+        page: page || 1,
+      },
+    });
+
+    const { results, next } = response.data;
+
+    return {
+      options: results.map((item) => ({
+        value: item.id,
+        label: `${item.kode} : ${item.nama_diagnosa}`,
+        data: item,
+      })),
+      hasMore: !!next,
+      additional: {
+        page: (page || 1) + 1,
+      },
+    };
+  };
 
   const deleteRegis = useDeleteRegistrationById();
 
@@ -106,24 +126,18 @@ const PortalDoctorSlug = ({ params }: Props) => {
     );
 
   const ICDComponent = ({ selected, setSelected }) => {
+    const [inputValue, setInputValue] = useState("");
     return (
       <div className="mb-[10px]">
-        <Autocomplete
-          fullWidth
-          options={ICD}
+        <AsyncPaginate
           value={selected}
-          getOptionLabel={(option) =>
-            `${option.kode} : ${option.nama_diagnosa}`
-          }
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          onChange={(event, value) => setSelected(value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder="Cari diagnosa disini ..."
-              variant="outlined"
-            />
-          )}
+          loadOptions={loadOptions}
+          onChange={setSelected}
+          additional={{ page: 1 }}
+          inputValue={inputValue}
+          onInputChange={(newValue) => setInputValue(newValue)}
+          debounceTimeout={300} // biar gak tiap ketik langsung fetch
+          placeholder="Cari diagnosa disini ..."
         />
       </div>
     );

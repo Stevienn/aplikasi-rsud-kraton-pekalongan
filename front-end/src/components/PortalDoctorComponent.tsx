@@ -4,7 +4,6 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import ModalDiagnosa from "./ModalDiagnosa";
 import CustomTable from "./CustomTable";
 import { redirect } from "next/navigation";
 

@@ -13,6 +13,8 @@ import calendar
 from django.core.mail import send_mail
 from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework import filters
 
 class DokterViewSet(viewsets.ModelViewSet):
     queryset = Dokter.objects.all()
@@ -21,10 +23,17 @@ class DokterViewSet(viewsets.ModelViewSet):
 class DokterSpesialisViewSet(viewsets.ModelViewSet):
     queryset = Dokter_spesialis.objects.all()
     serializer_class = DokterSpesialisSerializer
+    
+class ICDPagination(PageNumberPagination):
+    page_size = 10  # tampilkan 10 dulu
+    page_size_query_param = 'page_size'
 
 class IcdViewSet(viewsets.ModelViewSet):
     queryset = ICD.objects.all()
     serializer_class = IcdSerializer
+    pagination_class = ICDPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['kode', 'nama_diagnosa']  # field yang mau dicari
 
 class PasienViewSet(viewsets.ModelViewSet):
     queryset = Pasien.objects.all()
@@ -37,7 +46,6 @@ class HariPraktekViewSet(viewsets.ModelViewSet):
 class SesiPraktekViewSet(viewsets.ModelViewSet):
     queryset = sesi_praktek.objects.all()
     serializer_class = SesiPraktekSerializer
-
 
 class PerawatViewSet(viewsets.ModelViewSet):
     queryset = perawat.objects.all()
@@ -59,40 +67,60 @@ class LaporanIcdView(APIView):
     def get(self, request):
         data = []
         
-        bulan_tahun_list = Pendaftaran.objects.annotate(
-            bulan = ExtractMonth('tanggal_konsultasi'),
-            tahun = ExtractYear('tanggal_konsultasi'),
+        bulan_tahun_list = History.objects.annotate(
+            bulan=ExtractMonth('tanggal_konsultasi'),
+            tahun=ExtractYear('tanggal_konsultasi'),
         ).values('bulan', 'tahun').distinct()
         
         for item in bulan_tahun_list:
             bulan = item['bulan']
             tahun = item['tahun']
-            
-            jumlah_icd = Pendaftaran.objects.filter(
-                tanggal_konsultasi__month=bulan, 
-                tanggal_konsultasi__year=tahun, 
-                diagnosa_icd__isnull=False
+
+            # Ambil semua ICD dari primary dan secondary
+            icd_queryset = History.objects.filter(
+                tanggal_konsultasi__month=bulan,
+                tanggal_konsultasi__year=tahun
             ).values(
-                'diagnosa_icd__kode', 
-                'diagnosa_icd__nama_diagnosa'
-            ).annotate(
-                jumlah_pasien=Count('data_pasien')
-            ).order_by('-jumlah_pasien')[:10]
-            
-            icd_list=[]
-            for icd in jumlah_icd:
-                icd_list.append({
-                    'kode': icd['diagnosa_icd__kode'],
-                    'nama_diagnosa': icd['diagnosa_icd__nama_diagnosa'],
-                    'jumlah_pasien': icd['jumlah_pasien']
-                })
-            
+                'diagnosa_primary__kode',
+                'diagnosa_primary__nama_diagnosa',
+                'diagnosa_secondary__kode',
+                'diagnosa_secondary__nama_diagnosa'
+            )
+
+            icd_counter = {}
+
+            for icd in icd_queryset:
+                # Primary
+                kode_prim = icd['diagnosa_primary__kode']
+                nama_prim = icd['diagnosa_primary__nama_diagnosa']
+                if kode_prim and nama_prim:
+                    key = (kode_prim, nama_prim)
+                    icd_counter[key] = icd_counter.get(key, 0) + 1
+
+                # Secondary
+                kode_sec = icd['diagnosa_secondary__kode']
+                nama_sec = icd['diagnosa_secondary__nama_diagnosa']
+                if kode_sec and nama_sec:
+                    key = (kode_sec, nama_sec)
+                    icd_counter[key] = icd_counter.get(key, 0) + 1
+
+            # Ubah ke list dan urutkan
+            icd_list = [
+                {
+                    'kode': kode,
+                    'nama_diagnosa': nama,
+                    'jumlah_pasien': count
+                }
+                for (kode, nama), count in icd_counter.items()
+            ]
+            icd_list = sorted(icd_list, key=lambda x: x['jumlah_pasien'], reverse=True)[:10]
+
             data.append({
                 'tahun': tahun,
                 'bulan': bulan,
                 'icd_list': icd_list
             })
-        
+
         return Response(data)
 
 class LaporanDokterView(APIView):
