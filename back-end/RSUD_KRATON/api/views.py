@@ -106,17 +106,25 @@ class LaporanDokterView(APIView):
             tahun = ExtractYear('tanggal_konsultasi'),
         ).values('bulan', 'tahun').distinct()
         
+        bulan_indonesia = {
+            1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
+            5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus",
+            9: "September", 10: "Oktober", 11: "November", 12: "Desember"
+        }
+        
         for item in bulan_tahun_list:
-            bulan = item['bulan']
+            bulan_angka = item['bulan']  # ← untuk query
+            bulan = bulan_indonesia[item['bulan']]
             tahun = item['tahun']
             
             dokter_umum_data = []
             
             for dokter in Dokter.objects.all():
-                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan, tanggal_konsultasi__year=tahun).count()
+                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan_angka, tanggal_konsultasi__year=tahun).count()
                 
                 if jumlah_pasien  > 0:
                     dokter_umum_data.append({
+                        'id': dokter.id,
                         'nama_dokter': dokter.nama_dokter,
                         'spesialisasi': 'Doker Umum',
                         'jumlah_pasien': jumlah_pasien
@@ -124,10 +132,11 @@ class LaporanDokterView(APIView):
             
             dokter_spesialis_data = []
             for dokter in Dokter_spesialis.objects.all():
-                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan, tanggal_konsultasi__year=tahun).count()
+                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan_angka, tanggal_konsultasi__year=tahun).count()
                 
                 if jumlah_pasien > 0:
                     dokter_spesialis_data.append({
+                        'id': dokter.id,
                         'nama_dokter': dokter.nama_dokter,
                         'spesialisasi': dokter.spesialization,
                         'jumlah_pasien': jumlah_pasien

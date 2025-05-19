@@ -35,100 +35,98 @@ const CustomTable = ({
     setPage(0);
   };
   return (
-    <div>
-      <Paper
-        sx={{ width: "100%", overflow: "hidden", border: 0, borderRadius: 5 }}
-      >
-        <TableContainer>
-          <Table stickyHeader>
-            <TableHead>
+    <Paper
+      sx={{ width: "100%", overflow: "hidden", border: 0, borderRadius: 5 }}
+    >
+      <TableContainer>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    width: column.width,
+                    fontSize: 17,
+                    fontWeight: "bold",
+                    color: "var(--color-blue-primary)",
+                    paddingLeft: 38,
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.length === 0 ? (
               <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{
-                      width: column.width,
-                      fontSize: 17,
-                      fontWeight: "bold",
-                      color: "var(--color-blue-primary)",
-                      paddingLeft: 38,
-                    }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
+                <TableCell
+                  colSpan={columns.length}
+                  align="center"
+                  sx={{ padding: 5, fontStyle: "italic", color: "#888" }}
+                >
+                  Tidak ada data pasien.
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    align="center"
-                    sx={{ padding: 5, fontStyle: "italic", color: "#888" }}
-                  >
-                    Tidak ada data pasien.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, i) => (
-                    <TableRow key={i}>
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell
-                            sx={{ paddingY: 5, paddingLeft: 5 }}
-                            key={column.id}
-                          >
-                            {column.id === "aksiDiag" && (
+            ) : (
+              rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, i) => (
+                  <TableRow key={i}>
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      return (
+                        <TableCell
+                          sx={{ paddingY: 5, paddingLeft: 5 }}
+                          key={column.id}
+                        >
+                          {column.id === "aksiDiag" && (
+                            <Image
+                              src="/icons/action_icon.png"
+                              alt="icon_action"
+                              width={21}
+                              height={21}
+                              onClick={() =>
+                                handleAction(row.noBPJS, row.keluhan)
+                              }
+                              className="cursor-pointer"
+                            />
+                          )}
+                          {column.id === "aksiRekap" && (
+                            <Link href={`/rekap-medis/${row.id}`}>
                               <Image
                                 src="/icons/action_icon.png"
                                 alt="icon_action"
                                 width={21}
                                 height={21}
-                                onClick={() =>
-                                  handleAction(row.noBPJS, row.keluhan)
-                                }
                                 className="cursor-pointer"
                               />
-                            )}
-                            {column.id === "aksiRekap" && (
-                              <Link href={`/rekap-medis/${row.id}`}>
-                                <Image
-                                  src="/icons/action_icon.png"
-                                  alt="icon_action"
-                                  width={21}
-                                  height={21}
-                                  className="cursor-pointer"
-                                />
-                              </Link>
-                            )}
-                            {column.id === "status" && (
+                            </Link>
+                          )}
+                          {/* {column.id === "status" && (
                               
-                            )}
-                            {value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </div>
+                            )} */}
+                          {value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Paper>
   );
 };
 
