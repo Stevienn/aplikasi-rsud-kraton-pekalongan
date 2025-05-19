@@ -22,7 +22,7 @@ const monthData = [
   "Desember",
 ];
 
-const yearData = [2023, 2024, 2025];
+const yearData = [2025];
 
 const columns: GridColDef[] = [
   {

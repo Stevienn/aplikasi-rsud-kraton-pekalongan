@@ -128,7 +128,7 @@ class LaporanDokterView(APIView):
         
         data = []
         
-        bulan_tahun_list = Pendaftaran.objects.annotate(
+        bulan_tahun_list = History.objects.annotate(
             bulan = ExtractMonth('tanggal_konsultasi'),
             tahun = ExtractYear('tanggal_konsultasi'),
         ).values('bulan', 'tahun').distinct()
@@ -147,19 +147,27 @@ class LaporanDokterView(APIView):
             dokter_umum_data = []
             
             for dokter in Dokter.objects.all():
-                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan_angka, tanggal_konsultasi__year=tahun).count()
+                jumlah_pasien = History.objects.filter(
+                    Dokter=dokter,
+                    tanggal_konsultasi__month=bulan_angka,
+                    tanggal_konsultasi__year=tahun
+                ).count()
                 
                 if jumlah_pasien  > 0:
                     dokter_umum_data.append({
                         'id': dokter.id,
                         'nama_dokter': dokter.nama_dokter,
-                        'spesialisasi': 'Doker Umum',
+                        'spesialisasi': 'Dokter Umum',
                         'jumlah_pasien': jumlah_pasien
                     })
             
             dokter_spesialis_data = []
             for dokter in Dokter_spesialis.objects.all():
-                jumlah_pasien = Pendaftaran.objects.filter(nama_dokter=dokter.nama_dokter, tanggal_konsultasi__month=bulan_angka, tanggal_konsultasi__year=tahun).count()
+                jumlah_pasien = History.objects.filter(
+                    Dokter_spesialis=dokter,
+                    tanggal_konsultasi__month=bulan_angka,
+                    tanggal_konsultasi__year=tahun
+                ).count()
                 
                 if jumlah_pasien > 0:
                     dokter_spesialis_data.append({
@@ -184,37 +192,31 @@ class LaporanPengunjungView(APIView):
         tahun_ini = today.year
         
         start = today - timedelta(days=6)
-        minggu_qs = Pendaftaran.objects.filter(
+        minggu_qs = History.objects.filter(
             tanggal_konsultasi__range=[start, today]
         ).annotate(
             weekday = ExtractWeekDay('tanggal_konsultasi')
         ).values('weekday'). annotate(
-            jumlah = Count('data_pasien')
+            jumlah = Count('id')
         )
         
-        nama_hari = {
-            1 : 'Senin',
-            2 : 'Selasa',
-            3 : 'Rabu',
-            4 : 'Kamis',
-            5 : 'Jumat',
-            6 : 'Sabtu',
-            7 : 'Minggu',
-        }
-        
-        rekap_7_hari = {nama: 0 for nama in nama_hari.values()}
-        
-        for item in minggu_qs:
-            hari = nama_hari.get(item['weekday'], 'Tidak Diketahui')
-            rekap_7_hari[hari] = item['jumlah']
+        rekap_7_hari = []
+
+        for i in range(6, -1, -1):  # 6 → 0
+            tanggal = today - timedelta(days=i)
+            jumlah = History.objects.filter(tanggal_konsultasi=tanggal).count()
+            rekap_7_hari.append({
+                'tanggal': tanggal.strftime('%Y-%m-%d'),
+                'jumlah': jumlah
+            })
             
             #Rekap Bulanan
-            bulanan_qs = Pendaftaran.objects.filter(
+            bulanan_qs = History.objects.filter(
                 tanggal_konsultasi__year = tahun_ini
             ).annotate(
                 bulan = ExtractMonth('tanggal_konsultasi')
             ).values('bulan').annotate(
-                jumlah = Count('data_pasien')
+                jumlah = Count('id')
             )
             
         jumlah_pasien_bulanan = {calendar.month_name[i]: 0 for i in range(1,13)}
@@ -223,10 +225,10 @@ class LaporanPengunjungView(APIView):
             jumlah_pasien_bulanan[nama_bulan] = item['jumlah']
             
         #Rekap Tahunan 
-        tahunan_qs = Pendaftaran.objects.annotate(
+        tahunan_qs = History.objects.annotate(
             tahun = ExtractYear('tanggal_konsultasi')
         ).values('tahun').annotate(
-            jumlah = Count('data_pasien')
+            jumlah = Count('id')
         )
             
         jumlah_pasien_tahunan = {}

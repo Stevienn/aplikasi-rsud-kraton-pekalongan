@@ -1,14 +1,15 @@
 import { useGetAttendance } from "@/hooks/api/useAttendance";
 import { BarChart } from "@mui/x-charts";
+import dayjs from "dayjs";
 import React from "react";
 
 const attendanceDay = [
-  "Hari Pertama",
-  "Hari Kedua",
-  "Hari Ketiga",
-  "Hari Keempat",
-  "Hari Kelima",
-  "Hari Keenam",
+  "7 Hari Yang Lalu",
+  "6 Hari Yang Lalu",
+  "5 Hari Yang Lalu",
+  "4 Hari Yang Lalu",
+  "3 Hari Yang Lalu",
+  "Kemarin",
   "Hari Ini",
 ];
 
@@ -32,14 +33,18 @@ const PatientAttendance = () => {
 
   if (isLoading) return <div>Loading data...</div>;
 
+  console.log("data 7 hari", data);
+
+  console.log(dayjs());
+
   const attendanceDayData = [
-    data.rekap_7_hari_terakhir.Senin,
-    data.rekap_7_hari_terakhir.Selasa,
-    data.rekap_7_hari_terakhir.Rabu,
-    data.rekap_7_hari_terakhir.Kamis,
-    data.rekap_7_hari_terakhir.Jumat,
-    data.rekap_7_hari_terakhir.Sabtu,
-    data.rekap_7_hari_terakhir.Minggu,
+    data.rekap_7_hari_terakhir[0].jumlah,
+    data.rekap_7_hari_terakhir[1].jumlah,
+    data.rekap_7_hari_terakhir[2].jumlah,
+    data.rekap_7_hari_terakhir[3].jumlah,
+    data.rekap_7_hari_terakhir[4].jumlah,
+    data.rekap_7_hari_terakhir[5].jumlah,
+    data.rekap_7_hari_terakhir[6].jumlah,
   ];
 
   const attendanceMonthData = [
