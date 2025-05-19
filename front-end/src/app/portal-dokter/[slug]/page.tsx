@@ -15,6 +15,7 @@ import {
 } from "@/hooks/api/useRegistration";
 import {
   useCreateRekapMedis,
+  useGetRekapMedis,
   useUpdateRekapMedis,
 } from "@/hooks/api/useRekapMedis";
 import { useUpdateUser } from "@/hooks/api/useUser";
@@ -53,6 +54,8 @@ const PortalDoctorSlug = ({ params }: Props) => {
     }
   );
 
+  const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
+
   const { data: doctorSpc, isLoading: isLoadingDoctorSpc } =
     useGetSpecialistDoctorsById(doctorData?.user.id, {
       enabled: !!doctorData && !!doctorData.user.spesialization,
@@ -68,8 +71,10 @@ const PortalDoctorSlug = ({ params }: Props) => {
   const [selectedSecondary, setSelectedSecondary] = useState();
   const [isModalConfirm, setIsModalConfirm] = useState(false);
 
+  const [loadingEmail, setLoadingEmail] = useState(false);
+  const [message, setMessage] = useState("");
+
   const loadOptions = async (searchQuery, loadedOptions, { page }) => {
-    console.log("searchQuery:", searchQuery); // debug cek apa query yang diterima
     const response = await axios.get("/ICD", {
       params: {
         search: searchQuery,
@@ -100,6 +105,25 @@ const PortalDoctorSlug = ({ params }: Props) => {
   const updateUser = useUpdateUser();
 
   const loading = doctorData === null || isLoadingDoctor || isLoadingDoctorSpc;
+
+  const sendEmail = async () => {
+    setLoadingEmail(true);
+    setMessage("");
+
+    try {
+      const { data } = await axios.post("/kirim-email/", {
+        id_bpjs: dataPatient.data_pasien.ID_BPJS,
+      });
+      setMessage(data.message || "Email berhasil dikirim");
+      console.log("BERHASILLLL");
+    } catch (error) {
+      setMessage(
+        error.response?.data?.error || "Terjadi kesalahan saat mengirim email"
+      );
+    } finally {
+      setLoadingEmail(false);
+    }
+  };
 
   if (loading)
     return (
@@ -155,12 +179,12 @@ const PortalDoctorSlug = ({ params }: Props) => {
     try {
       // Check Pasien
       let pasienInRekap = rekapData?.find(
-        (r) => r.data_pasien?.ID_BPJS === dataPatient.ID_BPJS
+        (r) => r.data_pasien?.ID_BPJS === dataPatient.data_pasien.ID_BPJS
       );
 
       if (!pasienInRekap) {
         const createdRekap = await createRekap.mutateAsync({
-          data_pasien_id: dataPatient.ID_BPJS,
+          data_pasien_id: dataPatient.data_pasien.ID_BPJS,
           history_ids: [],
         });
         pasienInRekap = createdRekap;
@@ -168,11 +192,11 @@ const PortalDoctorSlug = ({ params }: Props) => {
       }
 
       const newHistory = {
-        ...(specialization
+        ...(doctorData.user.spesialization
           ? { data_dokter_spesialis_id: dataDoctor.id }
           : { data_dokter_umum_id: dataDoctor.id }),
-        diagnosa_primary_id: selectedPrimary.id,
-        diagnosa_secondary_id: selectedSecondary?.id,
+        diagnosa_primary_id: selectedPrimary.data.id,
+        diagnosa_secondary_id: selectedSecondary?.data.id,
         tanggal_konsultasi: dataPatient.tanggal_konsultasi,
         keluhan: dataPatient.keluhan,
         diagnosa_sub: diagnosaSub,
@@ -184,16 +208,18 @@ const PortalDoctorSlug = ({ params }: Props) => {
       const updatedHistoryIds = [...(existingIds || []), createdHistory.id];
 
       await updateRekapMedis.mutateAsync({
-        id: dataPatient.ID_BPJS,
+        id: dataPatient.data_pasien.ID_BPJS,
         data: { history_ids: updatedHistoryIds },
       });
 
-      await deleteRegis.mutateAsync(dataPatient.ID_BPJS);
+      await deleteRegis.mutateAsync(dataPatient.data_pasien.ID_BPJS);
 
       await updateUser.mutateAsync({
-        id: dataPatient.ID_BPJS,
+        id: dataPatient.data_pasien.ID_BPJS,
         data: { nomor_urut: null },
       });
+
+      sendEmail();
       setIsModalConfirm(true);
     } catch (error) {
       console.error(error);
