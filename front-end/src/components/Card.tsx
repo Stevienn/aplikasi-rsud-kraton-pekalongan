@@ -129,7 +129,7 @@ const Card = ({
     );
   };
 
-  const SessionComponent = ({ session }) => {
+  const SessionComponent = ({ session }: any) => {
     const getDay = session.find((data) => dayName == data.hari);
 
     const getSession = getDay?.hari_praktek_set;

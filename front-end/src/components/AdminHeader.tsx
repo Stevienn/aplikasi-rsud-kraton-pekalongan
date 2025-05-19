@@ -32,7 +32,9 @@ const AdminHeader = ({
       />
       <div className="flex items-center ml-[140px] gap-[90px]">
         <Link
-          href="/portal-dokter"
+          href={`${
+            linkName1 === "Rekap Medis" ? "/portal-dokter" : "/portal-admin"
+          }`}
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
             pathname === "/portal-dokter" || "/portal-admin"
               ? "underline font-medium"
@@ -42,9 +44,13 @@ const AdminHeader = ({
           Dashboard
         </Link>
         <Link
-          href="/rekap-medis"
+          href={`${
+            linkName1 === "Rekap Medis" ? "/rekap-medis" : "/data-kunjungan"
+          }`}
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
-            pathname === "/rekap-medis" || pathname === `/rekap-medis/${slug}`
+            pathname === "/rekap-medis" ||
+            pathname === `/rekap-medis/${slug}` ||
+            pathname === "/data-kunjungan"
               ? "underline font-medium"
               : ""
           }`}
