@@ -82,7 +82,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'bangtanviarta@gmail.com'  # Ganti dengan email kamu
-EMAIL_HOST_PASSWORD = 'yoongi93'
+EMAIL_HOST_PASSWORD = 'vyjfkgqaxhsbbvyh'
 
 
 # Database

@@ -251,20 +251,27 @@ def api_kirim_email(request):
         if not pasien.email_pasien:
             return Response({"error": "Email pasien tidak tersedia"}, status=status.HTTP_400_BAD_REQUEST)
 
-        history = History.objects.filter(pasien=pasien).latest('tanggal_konsultasi')
+        rekap = rekap_medis.objects.get(ID_BPJS=pasien)
+        latest_history = rekap.history.order_by('-id').first()
+        
+        diagnosa_sub = latest_history.diagnosa_sub if latest_history.diagnosa_sub else "-"
+        diagnosa_primary = latest_history.diagnosa_primary.nama_diagnosa if latest_history.diagnosa_primary else "-"
+        diagnosa_secondary = latest_history.diagnosa_secondary.nama_diagnosa if latest_history.diagnosa_secondary else "-"
+        
+        dokter_umum = latest_history.Dokter.nama_dokter if latest_history.Dokter else ""
+        dokter_spesialis = latest_history.Dokter_spesialis.nama_dokter if latest_history.Dokter_spesialis else ""
 
-        diagnosa_primary = history.diagnosa_primary.nama_diagnosa if history.diagnosa_primary else "-"
-        diagnosa_secondary = history.diagnosa_secondary.nama_diagnosa if history.diagnosa_secondary else "-"
 
-        subject = f"Hasil Konsultasi Anda - {history.tanggal_konsultasi}"
+        subject = f"Hasil Konsultasi Anda - {latest_history.tanggal_konsultasi}"
         message = f"""Halo {pasien.nama},
 
-Hasil konsultasi Anda pada {history.tanggal_konsultasi}:
-Keluhan: {history.keluhan}
+Hasil konsultasi Anda pada {latest_history.tanggal_konsultasi} bersama Dokter {dokter_umum} {dokter_spesialis} adalah:
+Keluhan: {latest_history.keluhan}
+Diagnosa : {diagnosa_sub}
 Diagnosa Utama: {diagnosa_primary}
 Diagnosa Sekunder: {diagnosa_secondary}
 
-Terima kasih telah berkonsultasi di klinik kami 🙏
+Terima kasih telah berkonsultasi di RSUD KRATON PEKALONGAN 🙏
 """
 
         send_mail(
@@ -275,10 +282,13 @@ Terima kasih telah berkonsultasi di klinik kami 🙏
             fail_silently=False,
         )
 
-        return Response({"success": True, "message": "Email berhasil dikirim"}, status=status.HTTP_200_OK)
+        return Response({"success": True, "message": "Email berhasil dikirim" f"{diagnosa_sub}" }, status=status.HTTP_200_OK)
 
     except Pasien.DoesNotExist:
         return Response({"error": "Pasien tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+    
+    except rekap_medis.DoesNotExist:
+        return Response({"error": "Rekap medis tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
     except History.DoesNotExist:
         return Response({"error": "Riwayat konsultasi tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
