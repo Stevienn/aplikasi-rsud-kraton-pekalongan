@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/id";
 import ModalDiagnosa from "./ModalDiagnosa";
 import CustomTable from "./CustomTable";
+import { redirect } from "next/navigation";
 
 const columns = [
   {
@@ -48,7 +49,7 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
   const [isModal, setIsModal] = useState(false);
   const [dataPatient, setIsDataPatient] = useState();
   const [keluhan, setKeluhan] = useState("");
-  const [diagnosaSub, setDiagnosaSub] = useState("");
+
   const today = selectedDate.format("dddd");
   const disabled = dayjs();
 
@@ -124,7 +125,7 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
         setIsDataPatient(data.data_pasien);
       }
     });
-    setIsModal(true);
+    redirect(`/portal-dokter/${patientId}`);
   };
 
   return (

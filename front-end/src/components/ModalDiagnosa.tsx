@@ -60,7 +60,9 @@ const ModalDiagnosa = ({
           fullWidth
           options={ICD}
           value={selected}
-          getOptionLabel={(option) => `${option.kode} ${option.nama_diagnosa}`}
+          getOptionLabel={(option) =>
+            `${option.kode} : ${option.nama_diagnosa}`
+          }
           isOptionEqualToValue={(option, value) => option.id === value.id}
           onChange={(event, value) => setSelected(value)}
           renderInput={(params) => (
