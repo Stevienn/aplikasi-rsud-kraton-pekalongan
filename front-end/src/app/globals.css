@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-blue-primary: #2d336b;
-  --color-blue-secondary: #7886c7;
-  --color-blue-tertiary: #a9b5df;
-  --color-light-primary: #fff2f2;
+  --color-blue-primary: #3080e3;
+  --color-blue-secondary: #3393d4;
+  --color-blue-tertiary: #37a8c4;
+  --color-light-primary: #eef1f4;
+  --color-orange-primary: #fd723b;
 }
 
 .font-inter-sans {

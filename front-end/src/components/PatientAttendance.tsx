@@ -79,7 +79,7 @@ const PatientAttendance = () => {
       <div className="px-[55px] py-[30px] font-inria-sans">
         <div className="font-inria-sans bg-white mx-[40px] my-[20px] px-[30px] py-[40px] rounded-[40px]">
           <div className="mb-[20px]">
-            <h1 className="text-blue-primary font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
+            <h1 className="font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
               Grafik Kunjungan Pasien BPJS Minggu Ini
             </h1>
             <BarChart
@@ -93,7 +93,7 @@ const PatientAttendance = () => {
                 {
                   data: attendanceDayData,
                   label: "Jumlah Kehadiran",
-                  color: "#a9b5df",
+                  color: "#fd723b",
                 },
               ]}
               height={350}
@@ -101,7 +101,7 @@ const PatientAttendance = () => {
             />
           </div>
           <div className="mb-[20px]">
-            <h1 className="text-blue-primary font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
+            <h1 className="font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
               Grafik Kunjungan Pasien BPJS Per Bulan
             </h1>
             <BarChart
@@ -115,7 +115,7 @@ const PatientAttendance = () => {
                 {
                   data: attendanceMonthData,
                   label: "Jumlah Kehadiran",
-                  color: "#a9b5df",
+                  color: "#fd723b",
                 },
               ]}
               height={350}
@@ -123,8 +123,8 @@ const PatientAttendance = () => {
             />
           </div>
           <div className="mb-[20px]">
-            <h1 className="text-blue-primary font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
-              Grafik Kunjungan Pasien BPJS Per Bulan
+            <h1 className=" font-inter-sans font-bold text-[23px] ml-[40px] mb-[10px]">
+              Grafik Kunjungan Pasien BPJS Per Tahun
             </h1>
             <BarChart
               xAxis={[
@@ -137,7 +137,7 @@ const PatientAttendance = () => {
                 {
                   data: attendanceYearData,
                   label: "Jumlah Kehadiran",
-                  color: "#a9b5df",
+                  color: "#fd723b",
                 },
               ]}
               height={350}

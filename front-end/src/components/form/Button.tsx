@@ -16,8 +16,8 @@ const Button = ({
   return (
     <button
       className={`${
-        isCancel ? "bg-red-600" : " bg-blue-primary"
-      } rounded-[7px] text-white  cursor-pointer ${customClass}`}
+        isCancel ? "bg-red-600" : " bg-blue-primary hover:bg-orange-primary"
+      } rounded-[7px] text-white  cursor-pointer  transition-colors duration-300 ease-in-out ${customClass}`}
       onClick={onClick}
     >
       {placeholder}

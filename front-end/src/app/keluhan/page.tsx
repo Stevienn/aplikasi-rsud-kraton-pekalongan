@@ -159,13 +159,11 @@ const Keluhan = () => {
           </Modal>
         )}
         {modalRegistration && (
-          <Modal width="w-[500px]">
+          <Modal width="md:w-[500px]">
             <Modal.Header title="Pendaftaran" />
             <Modal.Body>
               <>
-                <p className="text-blue-primary font-semibold mb-[10px]">
-                  Pilih Tanggal
-                </p>
+                <p className="font-semibold mb-[10px]">Pilih Tanggal</p>
                 <div className="mb-[6px]">
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
@@ -207,7 +205,7 @@ const Keluhan = () => {
       </div>
 
       <FormLayout title="Selamat Datang !">
-        <div className="font-inter-sans pt-[30px]">
+        <div className="font-inter-sans pt-[30px] ">
           <h1 className="font-semibold text-[40px] text-gray-600 mb-[25px]">
             Keluhan
           </h1>
@@ -217,7 +215,7 @@ const Keluhan = () => {
           <textarea
             name="Keluhan"
             id="keluhan"
-            className="border-[2px] border-gray-400 px-[10px] py-[5px] rounded-[8px] mb-[25px] w-[900px] "
+            className="border-[2px] border-gray-400 px-[10px] py-[5px] rounded-[8px] mb-[25px] w-[400px] md:w-[900px] "
             placeholder="..."
             value={keluhan}
             onChange={(e) => setKeluhan(e.target.value)}

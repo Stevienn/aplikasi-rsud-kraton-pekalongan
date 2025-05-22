@@ -106,16 +106,16 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
   };
 
   return (
-    <div className="grid grid-cols-2 font-inter-sans">
+    <div className="md:grid md:grid-cols-2 font-inter-sans">
       <div>
-        <div className="px-[65px] pt-[160px]">
+        <div className="px-[65px] md:pt-[155px] pt-[100px]">
           <Image
             src="/images/logo/RSUDKraton.png"
             alt="Logo"
             width={264}
             height={143}
           />
-          <h1 className="font-bold text-[45px] text-blue-primary mb-[-20px]">
+          <h1 className="font-bold text-[45px] mt-[10px] text-gray-800 mb-[-20px]">
             RSUD KRATON
           </h1>
           <h1 className="font-bold text-[45px] text-blue-primary">
@@ -123,7 +123,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
           </h1>
           {isAdmin ? (
             <>
-              <h1 className="font-light text-[32px] mt-[-10px] mb-[15px] text-blue-primary">
+              <h1 className="font-light text-[32px] mt-[-10px] mb-[15px] text-blue-secondary">
                 PORTAL ADMIN
               </h1>
               <InputField
@@ -160,7 +160,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
                   type="text"
                   placeholder="ex: 000125xxx"
                   customClass="mb-[30px]"
-                  inputWidth="w-[530px]"
+                  inputWidth="md:w-[530px]"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   isWarning={isWarningInput}
@@ -170,7 +170,7 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
                   type="text"
                   placeholder="ex: Kevin Safaat"
                   customClass="mb-[30px]"
-                  inputWidth="w-[530px]"
+                  inputWidth="md:w-[530px]"
                   value={validate}
                   onChange={(e) => setValidate(e.target.value)}
                   isWarning={isWarningValidate}
@@ -182,11 +182,11 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
                 />
               </div>
               <div className="flex mt-[10px]">
-                <p className="text-blue-primary font-semibold">
+                <p className="text-gray-800 font-semibold">
                   {"Belum pernah mendaftar? Silahkan melakukan "}
                   <Link
                     href="/registrasi"
-                    className="text-blue-primary font-bold cursor-pointer hover:text-blue-secondary underline"
+                    className="text-orange-primary font-bold cursor-pointer hover:text-blue-secondary underline"
                   >
                     Registrasi
                   </Link>
@@ -195,9 +195,15 @@ const LoginPage = ({ isAdmin }: ILoginPageProps) => {
             </>
           )}
         </div>
-        <Footer />
+        <div className="block md:hidden">
+          <Footer isFull />
+        </div>
+
+        <div className="hidden md:block">
+          <Footer />
+        </div>
       </div>
-      <div>
+      <div className="hidden md:block">
         <Image
           src={RumahSakit}
           alt="Rumah Sakit"

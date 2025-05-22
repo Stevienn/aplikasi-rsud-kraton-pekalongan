@@ -92,7 +92,7 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
 
     return (
       <div>
-        <p className="text-blue-primary font-semibold mb-[5px] font-inter-sans text-[20px]">
+        <p className="font-semibold mb-[5px] font-inter-sans text-[20px]">
           Pilih Sesi
         </p>
         <FormControl fullWidth sx={{ backgroundColor: "white" }}>
@@ -132,23 +132,10 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
       className="bg-light-primary px-[55px] py-[30px] h-[88dvh] font-inria-sans "
       id="shared-modal"
     >
-      {isModal && (
-        <ModalDiagnosa
-          dataPatient={dataPatient}
-          dataDoctor={doctor}
-          keluhan={keluhan}
-          diagnosaSub={diagnosaSub}
-          setDiagnosaSub={setDiagnosaSub}
-          closeModal={() => setIsModal(false)}
-          date={selectedDate.format("YYYY-MM-DD")}
-          specialization={doctorData.spesialization}
-          refetchDoctor={refetchDoctor}
-        />
-      )}
       <div className="mb-[20px] flex justify-between">
         <SessionComponent session={doctor?.schedule_dokter} />
         <div>
-          <p className="text-blue-primary font-semibold mb-[5px] font-inter-sans text-[20px]">
+          <p className="font-semibold mb-[5px] font-inter-sans text-[20px]">
             Pilih Tanggal
           </p>
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="id">

@@ -49,7 +49,6 @@ const CustomTable = ({
                     width: column.width,
                     fontSize: 17,
                     fontWeight: "bold",
-                    color: "var(--color-blue-primary)",
                     paddingLeft: 38,
                   }}
                 >
@@ -104,10 +103,17 @@ const CustomTable = ({
                               />
                             </Link>
                           )}
-                          {/* {column.id === "status" && (
-                              
-                            )} */}
-                          {value}
+                          {column.id === "status" ? (
+                            value === "DONE" ? (
+                              <p className="font-bold text-blue-primary">
+                                {value}
+                              </p>
+                            ) : (
+                              <p className="font-bold text-red-600">{value}</p>
+                            )
+                          ) : (
+                            value
+                          )}
                         </TableCell>
                       );
                     })}
