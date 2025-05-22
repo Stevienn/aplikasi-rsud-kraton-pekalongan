@@ -56,7 +56,7 @@ const RekapMedisComponent = ({ id, specialization, doctor }: any) => {
 
   return (
     <div className="bg-light-primary px-[55px] py-[30px] h-[88dvh] font-inria-sans ">
-      <p className="text-blue-primary text-[20px] font-semibold font-inter-sans mb-[5px]">
+      <p className="text-[20px] font-semibold font-inter-sans mb-[5px]">
         Cari Pasien
       </p>
       <TextField

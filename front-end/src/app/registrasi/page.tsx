@@ -184,7 +184,7 @@ const Registrasi = () => {
             type="text"
             placeholder="ex: Putri Aviarta"
             customClass="mb-[10px]"
-            inputWidth="w-full"
+            inputWidth="w-full md:w-[900px]"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -194,7 +194,7 @@ const Registrasi = () => {
             type="number"
             placeholder="ex: 1252****"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={bpjs}
             onChange={(e) => setBpjs(e.target.value)}
             isWarning={isWarningBpjs}
@@ -237,7 +237,7 @@ const Registrasi = () => {
             type="text"
             placeholder="ex: 081212345678"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             isWarning={isWarningPhone}
@@ -248,12 +248,12 @@ const Registrasi = () => {
             type="email"
             placeholder="ex: stevenharta@mail.com"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             isWarning={isWarningEmail}
           />
-          <div className="flex justify-end gap-[25px] mt-[75px]">
+          <div className="flex justify-end gap-[25px] md:mt-[75px] mt-[40px]">
             <Button
               isCancel
               placeholder="Kembali"

@@ -21,10 +21,12 @@ const PilihDokter = () => {
   }, []);
 
   return (
-    <div className="font-inria-sans pb-[130px]">
+    <div className="font-inria-sans pb-[130px] bg-light-primary">
       <Header name={userData?.user.nama} />
-      <h1 className="font-bold text-[30px] ml-[45px] mt-[30px]">Dokter Umum</h1>
-      <div className="grid gap-[85px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[35px] mx-[45px]">
+      <h1 className="font-bold text-[30px] ml-[105px] mt-[30px]">
+        Dokter Umum
+      </h1>
+      <div className="grid gap-[85px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[35px] mx-[60px] md:mx-[105px]">
         {doctorUmum?.map((doctor) => (
           <Card
             userData={userData}
@@ -34,10 +36,10 @@ const PilihDokter = () => {
           />
         ))}
       </div>
-      <h1 className="font-bold text-[30px] ml-[45px] mt-[30px]">
+      <h1 className="font-bold text-[30px] ml-[105px] mt-[30px]">
         Dokter Spesialis
       </h1>
-      <div className="grid gap-[85px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[35px] mx-[45px]">
+      <div className="grid gap-[85px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 my-[35px]  mx-[60px] md:mx-[105px]">
         {doctorSpesialis?.map((doctor) => (
           <Card
             userData={userData}

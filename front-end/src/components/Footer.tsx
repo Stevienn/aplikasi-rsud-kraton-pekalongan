@@ -7,7 +7,7 @@ interface IFooterProps {
 const Footer = ({ isFull }: IFooterProps) => {
   return (
     <footer
-      className={`bg-blue-primary bottom-0 fixed flex items-center justify-center h-[85px] ${
+      className={`bg-gradient-to-r from-blue-secondary to-blue-tertiary bottom-0 fixed flex items-center justify-center h-[85px] ${
         isFull ? "w-full" : "w-[50%]"
       } `}
     >

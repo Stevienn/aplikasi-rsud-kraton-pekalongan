@@ -32,9 +32,6 @@ const Konfirmasi = () => {
 
   if (isLoading) return <div>Loading registration data...</div>;
 
-  console.log(userData);
-  console.log(pendaftaran);
-
   return (
     <div>
       <FormLayout title="Selamat Datang !">
@@ -44,7 +41,7 @@ const Konfirmasi = () => {
             name="Nama (Sesuai KTP)"
             type="text"
             customClass="mb-[10px]"
-            inputWidth="w-full"
+            inputWidth="w-full md:w-[900px]"
             value={pendaftaran.data_pasien.nama}
             isDisabled
           />
@@ -54,7 +51,7 @@ const Konfirmasi = () => {
             type="number"
             placeholder="ex: 1252****"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={pendaftaran.data_pasien.ID_BPJS}
             isDisabled
           />
@@ -63,7 +60,7 @@ const Konfirmasi = () => {
           <textarea
             name="Keluhan"
             id="keluhan"
-            className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-[900px] "
+            className="border-[2px] border-gray-300 px-[10px] py-[5px] rounded-[5px] mb-[10px] w-[245px] md:w-[900px] "
             value={pendaftaran.keluhan}
             disabled
           />
@@ -72,7 +69,7 @@ const Konfirmasi = () => {
             name="Nama Dokter"
             type="text"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={pendaftaran.nama_dokter}
             isDisabled
           />
@@ -81,7 +78,7 @@ const Konfirmasi = () => {
             name="Sesi Praktek"
             type="text"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={pendaftaran.sesi_praktek_dokter}
             isDisabled
           />
@@ -90,11 +87,11 @@ const Konfirmasi = () => {
             name="Nomor Urut"
             type="number"
             customClass="mb-[10px]"
-            inputWidth="w-[900px]"
+            inputWidth="w-full md:w-[900px]"
             value={pendaftaran.data_pasien.nomor_urut}
             isDisabled
           />
-          <div className="flex justify-end gap-[25px] mt-[75px]">
+          <div className="flex justify-end gap-[25px] mt-[40px] md:mt-[75px]">
             <Button isCancel placeholder="Kembali" onClick={handleLogout} />
           </div>
         </div>

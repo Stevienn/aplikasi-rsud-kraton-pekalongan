@@ -136,7 +136,7 @@ const Card = ({
 
     return (
       <div>
-        <p className="text-blue-primary font-semibold mb-[10px]">Pilih Sesi</p>
+        <p className="font-semibold mb-[10px]">Pilih Sesi</p>
         <FormControl fullWidth>
           <Select
             value={selectedSession}
@@ -167,7 +167,7 @@ const Card = ({
             setModalSuccess(false);
             redirect("/konfirmasi");
           }}
-          width="w-[888px]"
+          width="md:w-[888px] w-[400px]"
         >
           <Modal.Header title="RSUD Kraton Pekalongan" />
           <Modal.Body>
@@ -184,7 +184,7 @@ const Card = ({
         </Modal>
       )}
       {modalSchedule && (
-        <Modal width="w-[500px]">
+        <Modal width="w-[400px] md:w-[500px]">
           <Modal.Header title={`Jadwal Praktek ${doctorData.nama_dokter}`} />
           <Modal.Body>
             <ScheduleDisplay schedule={doctorData.schedule_dokter} />
@@ -199,14 +199,12 @@ const Card = ({
         </Modal>
       )}
       {modalRegistration && (
-        <Modal width="w-[500px]">
+        <Modal width="w-[400px] md:w-[500px]">
           <Modal.Header title={doctorData.nama_dokter} />
           <Modal.Body>
             <>
               <div>
-                <p className="text-blue-primary font-semibold mb-[10px]">
-                  Pilih Tanggal
-                </p>
+                <p className=" font-semibold mb-[10px]">Pilih Tanggal</p>
                 <div className="mb-[6px]">
                   <LocalizationProvider
                     dateAdapter={AdapterDayjs}
@@ -252,7 +250,7 @@ const Card = ({
           </Modal.Footer>
         </Modal>
       )}
-      <div className="shadow-2xl w-[300px] rounded-[40px] font-inria-sans">
+      <div className="shadow-2xl w-[300px] rounded-[40px] font-inria-sans bg-white">
         <div className="overflow-hidden rounded-tl-[40px] rounded-tr-[40px] max-h-[180px]">
           <Image
             src={doctorData?.image_dokter}
@@ -271,13 +269,13 @@ const Card = ({
             {doctorData?.nama_dokter}
           </p>
           <p
-            className="underline text-blue-primary font-semibold cursor-pointer mb-[80px]"
+            className="underline text-blue-tertiary font-semibold cursor-pointer mb-[80px]"
             onClick={() => setModalSchedule(true)}
           >
             Lihat Jadwal
           </p>
           <p
-            className="bg-gradient-to-r from-blue-secondary to-blue-primary text-white px-[14px] py-[7px] rounded-[27px] max-w-[140px] flex justify-center mb-[9px] cursor-pointer"
+            className=" bg-blue-primary hover:bg-orange-primary transition-colors duration-300 ease-in-out text-white px-[14px] py-[7px] rounded-[27px] max-w-[140px] flex justify-center mb-[9px] cursor-pointer"
             onClick={() => setModalRegistration(true)}
           >
             Pilih Dokter

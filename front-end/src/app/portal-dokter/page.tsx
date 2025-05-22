@@ -10,6 +10,7 @@ import {
   useGetDoctorById,
   useGetSpecialistDoctorsById,
 } from "@/hooks/api/useDoctor";
+import Footer from "@/components/Footer";
 
 const PortalDokter = () => {
   const [doctorData, setDoctorData] = useState<IUserDoctor | null>(null);
@@ -88,6 +89,7 @@ const PortalDokter = () => {
         doctor={finalDoctor}
         refetchDoctor={finalRefetch}
       />
+      <Footer isFull />
     </div>
   );
 };

@@ -24,6 +24,7 @@ import { redirect, useRouter } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import axios from "@/lib/axios";
+import Footer from "@/components/Footer";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -261,16 +262,16 @@ const PortalDoctorSlug = ({ params }: Props) => {
         linkName1="Rekap Medis"
       />
       <div
-        className="bg-light-primary px-[55px] py-[30px] h-[88dvh] font-inria-sans"
+        className="bg-light-primary px-[55px] pt-[30px] h-[95dvh] font-inria-sans"
         id="shared-modal"
       >
         <div className="font-inria-sans bg-white mx-[200px] my-[20px] px-[100px] py-[40px] rounded-[40px]">
           <div className="flex gap-[10px] mb-[15px]">
-            <h1 className="text-[30px] font-semibold text-blue-primary font-inter-sans">
+            <h1 className="text-[30px] font-semibold font-inter-sans">
               Kirim Diagnosa Untuk Pasien {dataPatient?.data_pasien?.nama} , No
               BPJS
             </h1>
-            <h1 className="text-[30px] font-medium text-blue-primary font-inter-sans">
+            <h1 className="text-[30px] font-semibold text-orange-primary font-inter-sans">
               {slug}
             </h1>
           </div>
@@ -332,6 +333,7 @@ const PortalDoctorSlug = ({ params }: Props) => {
           </div>
         </div>
       </div>
+      <Footer isFull />
     </div>
   );
 };

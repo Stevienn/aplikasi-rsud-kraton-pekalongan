@@ -72,13 +72,20 @@ class LaporanIcdView(APIView):
             tahun=ExtractYear('tanggal_konsultasi'),
         ).values('bulan', 'tahun').distinct()
         
+        bulan_indonesia = {
+            1: "Januari", 2: "Februari", 3: "Maret", 4: "April",
+            5: "Mei", 6: "Juni", 7: "Juli", 8: "Agustus",
+            9: "September", 10: "Oktober", 11: "November", 12: "Desember"
+        }
+        
         for item in bulan_tahun_list:
-            bulan = item['bulan']
+            bulan_angka = item['bulan']  # ← untuk query
+            bulan = bulan_indonesia[item['bulan']]
             tahun = item['tahun']
 
             # Ambil semua ICD dari primary dan secondary
             icd_queryset = History.objects.filter(
-                tanggal_konsultasi__month=bulan,
+                tanggal_konsultasi__month=bulan_angka,
                 tanggal_konsultasi__year=tahun
             ).values(
                 'diagnosa_primary__kode',

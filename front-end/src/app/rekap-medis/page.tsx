@@ -2,6 +2,7 @@
 
 import { getUser } from "@/api/user";
 import AdminHeader from "@/components/AdminHeader";
+import Footer from "@/components/Footer";
 import RekapMedisComponent from "@/components/RekapMedisComponent";
 import {
   useGetDoctorById,
@@ -80,6 +81,7 @@ const RekapMedis = () => {
         specialization={doctorData.user.spesialization}
         doctor={finalDoctor}
       />
+      <Footer isFull />
     </div>
   );
 };

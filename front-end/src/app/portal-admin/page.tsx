@@ -1,6 +1,7 @@
 "use client";
 
 import AdminHeader from "@/components/AdminHeader";
+import Footer from "@/components/Footer";
 import PortalAdminComponent from "@/components/PortalAdminComponent";
 import React from "react";
 
@@ -13,6 +14,7 @@ const PortalAdmin = () => {
         linkName1="Data Kunjungan"
       />
       <PortalAdminComponent />
+      <Footer isFull />
     </div>
   );
 };

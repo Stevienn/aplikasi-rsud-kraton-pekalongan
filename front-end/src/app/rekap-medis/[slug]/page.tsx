@@ -6,6 +6,7 @@ import AdminHeader from "@/components/AdminHeader";
 import { useRouter } from "next/navigation";
 import { getUser } from "@/api/user";
 import { IUserDoctor } from "@/interface/doctorInterface";
+import Footer from "@/components/Footer";
 
 const columns = [
   {
@@ -77,8 +78,6 @@ const RekapMedisPasien = ({ params }: Props) => {
 
   const rekapMedis = getRekapMedis();
 
-  console.log(rekapMedis);
-
   const rows = useMemo(() => {
     if (!rekapMedis) return [];
     return rekapMedis.map((data, index) => ({
@@ -100,6 +99,7 @@ const RekapMedisPasien = ({ params }: Props) => {
           name="Loading..."
           image="/images/no_profile.png"
           slug={slug}
+          linkName1="Rekap Medis"
         />
         Loading user data...
       </div>
@@ -111,19 +111,21 @@ const RekapMedisPasien = ({ params }: Props) => {
         name={doctorData.user.nama_dokter}
         image={doctorData.user.image_dokter}
         slug={slug}
+        linkName1="Rekap Medis"
       />
       <div className="bg-light-primary px-[55px] py-[30px] h-[88dvh] font-inria-sans">
         <div className="flex gap-[10px] mb-[20px]">
-          <h1 className="text-[30px] font-semibold text-blue-primary font-inter-sans">
+          <h1 className="text-[30px] font-semibold font-inter-sans">
             Rekap Medis Pasien {rekapData?.data_pasien?.nama} , No BPJS
           </h1>
-          <h1 className="text-[30px] font-medium text-blue-primary font-inter-sans">
+          <h1 className="text-[30px] font-semibold text-orange-primary font-inter-sans">
             {slug}
           </h1>
         </div>
 
         <CustomTable rows={rows} columns={columns} />
       </div>
+      <Footer isFull />
     </div>
   );
 };

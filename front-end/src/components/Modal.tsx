@@ -62,7 +62,7 @@ interface IHeaderProps {
 const Header = ({ title, isCancel, customClass }: IHeaderProps) => {
   return (
     <div
-      className={`flex items-center bg-blue-primary justify-center ${customClass}`}
+      className={`flex items-center bg-gradient-to-r from-blue-secondary to-blue-tertiary justify-center ${customClass}`}
     >
       <div className="py-[12px] px-[20px]">
         <p className="text-light-primary font-semibold">{title}</p>

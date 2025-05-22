@@ -23,7 +23,7 @@ const AdminHeader = ({
   };
 
   return (
-    <header className="flex items-center justify-between font-inria-sans px-[45px] py-[20px] bg-blue-secondary">
+    <header className="flex items-center justify-between font-inria-sans px-[45px] py-[20px] bg-blue-tertiary">
       <Image
         src="/images/logo/RSUDKraton.png"
         alt="Logo"
@@ -36,7 +36,7 @@ const AdminHeader = ({
             linkName1 === "Rekap Medis" ? "/portal-dokter" : "/portal-admin"
           }`}
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
-            pathname === "/portal-dokter" || "/portal-admin"
+            pathname === "/portal-dokter" || pathname === "/portal-admin"
               ? "underline font-medium"
               : ""
           }`}
@@ -58,9 +58,16 @@ const AdminHeader = ({
           {linkName1}
         </Link>
         <Link
-          href="/rekap-medis"
+          href={`${
+            linkName1 === "Rekap Medis"
+              ? "/data-penyakit-dokter"
+              : "/data-penyakit"
+          }`}
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
-            pathname === "/data-penyakit" ? "underline font-medium" : ""
+            pathname === "/data-penyakit" ||
+            pathname === "/data-penyakit-dokter"
+              ? "underline font-medium"
+              : ""
           } `}
         >
           Data Penyakit

@@ -1,6 +1,7 @@
 "use client";
 
 import AdminHeader from "@/components/AdminHeader";
+import Footer from "@/components/Footer";
 import PatientAttendance from "@/components/PatientAttendance";
 import PatientDoctorAttendance from "@/components/PatientDoctorAttendance";
 import React from "react";
@@ -15,6 +16,7 @@ const DataKunjungan = () => {
       />
       <PatientAttendance />
       <PatientDoctorAttendance />
+      <Footer isFull />
     </div>
   );
 };

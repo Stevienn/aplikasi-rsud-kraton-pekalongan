@@ -33,12 +33,12 @@ const columns: GridColDef[] = [
   {
     field: "namaDokter",
     headerName: "Nama Dokter",
-    width: 500,
+    width: 700,
   },
   {
     field: "spesialis",
     headerName: "Spesialis",
-    width: 272,
+    width: 400,
   },
   {
     field: "jumlahPasien",
@@ -68,8 +68,6 @@ const PatientDoctorAttendance = () => {
     ...(selectedDoctor?.dokter_umum || []),
     ...(selectedDoctor?.dokter_spesialis || []),
   ];
-
-  console.log(combinedSelectedDoctor);
 
   const rows = combinedSelectedDoctor.map((data, index) => {
     return {
@@ -118,13 +116,13 @@ const PatientDoctorAttendance = () => {
 
   return (
     <div className="bg-light-primary">
-      <div className="px-[55px] py-[30px] font-inria-sans">
+      <div className="px-[55px] pt-[30px] pb-[100px] font-inria-sans">
         <div className="font-inria-sans bg-white mx-[40px] my-[20px] px-[30px] py-[40px] rounded-[40px]">
-          <h1 className="text-blue-primary font-inter-sans font-bold text-[23px] ml-[40px] mb-[15px]">
+          <h1 className="font-inter-sans font-bold text-[23px] ml-[40px] mb-[15px]">
             Tabel Kunjungan Pasien BPJS Per Dokter
           </h1>
           <div className="flex items-center mb-[20px]">
-            <h2 className="text-blue-primary font-inter-sans font-medium text-[23px] ml-[40px] mr-[10px]">
+            <h2 className="font-inter-sans font-medium text-[23px] ml-[40px] mr-[10px]">
               Bulan
             </h2>
             <DropdownComponent
@@ -132,7 +130,7 @@ const PatientDoctorAttendance = () => {
               setSelected={setSelectedMonth}
               value={monthData}
             />
-            <h2 className="text-blue-primary font-inter-sans font-medium text-[23px] ml-[40px] mr-[10px]">
+            <h2 className="font-inter-sans font-medium text-[23px] ml-[40px] mr-[10px]">
               Tahun
             </h2>
             <DropdownComponent
