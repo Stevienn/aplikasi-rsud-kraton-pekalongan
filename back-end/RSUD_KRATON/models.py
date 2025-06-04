@@ -26,7 +26,6 @@ class Pendaftaran(models.Model):
     keluhan = models.CharField(max_length=100)
     nama_dokter = models.CharField(max_length=50)
     sesi_praktek_dokter = models.CharField(max_length=50)
-    diagnosa_icd = models.ForeignKey(ICD, on_delete=models.CASCADE, null=True, blank=True, related_name='pasien')
 
     def __str__(self):
         return (f'Tanggal : {self.tanggal_konsultasi}, Nama Dokter : {self.nama_dokter}, Sesi : {self.sesi_praktek_dokter}') 
@@ -89,5 +88,5 @@ class rekap_medis(models.Model):
     ID_BPJS = models.ForeignKey(Pasien, primary_key=True, on_delete=models.CASCADE, related_name='pasien_set')
     history = models.ManyToManyField(History, related_name='history_set')
 
-    def str(self):
+    def __str__(self):
         return (f'id : {self.ID_BPJS}')

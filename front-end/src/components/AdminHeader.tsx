@@ -58,19 +58,12 @@ const AdminHeader = ({
           {linkName1}
         </Link>
         <Link
-          href={`${
-            linkName1 === "Rekap Medis"
-              ? "/data-penyakit-dokter"
-              : "/data-penyakit"
-          }`}
+          href={`${linkName1 === "Rekap Medis" ? "/data-penyakit-dokter" : ""}`}
           className={`text-white text-[20px] font-light font-inria-sans cursor-pointer ${
-            pathname === "/data-penyakit" ||
-            pathname === "/data-penyakit-dokter"
-              ? "underline font-medium"
-              : ""
+            pathname === "/data-penyakit-dokter" ? "underline font-medium" : ""
           } `}
         >
-          Data Penyakit
+          {linkName1 === "Rekap Medis" && <p>Data Penyakit</p>}
         </Link>
       </div>
       <div className="flex items-center gap-[20px]">
