@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import PortalDoctorComponent from "@/components/PortalDoctorComponent";
 import { getUser } from "@/api/user";
-import { IDoctor, IDoctorSpc, IUserDoctor } from "@/interface/doctorInterface";
+import { IUserDoctor } from "@/interface/doctorInterface";
 import AdminHeader from "@/components/AdminHeader";
 import { useRouter } from "next/navigation";
 import {
@@ -87,6 +87,7 @@ const PortalDokter = () => {
         doctor={finalDoctor}
         refetchDoctor={finalRefetch}
       />
+      ~
       <Footer isFull />
     </div>
   );

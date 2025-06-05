@@ -251,7 +251,7 @@ const Card = ({
         </Modal>
       )}
       <div className="shadow-2xl w-[300px] rounded-[40px] font-inria-sans bg-white">
-        <div className="overflow-hidden rounded-tl-[40px] rounded-tr-[40px] max-h-[180px]">
+        <div className="overflow-hidden rounded-tl-[40px] rounded-tr-[40px] max-h-[240px]">
           <Image
             src={doctorData?.image_dokter}
             alt="doctor"
