@@ -75,7 +75,7 @@ const PortalDoctorSlug = ({ params }: Props) => {
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [message, setMessage] = useState("");
 
-  const loadOptions = async (searchQuery, loadedOptions, { page }) => {
+  const getICD = async (searchQuery, loadedOptions, { page }) => {
     const response = await axios.get("/ICD", {
       params: {
         search: searchQuery,
@@ -84,7 +84,7 @@ const PortalDoctorSlug = ({ params }: Props) => {
     });
 
     const { results, next } = response.data;
-
+~~
     return {
       options: results.map((item) => ({
         value: item.id,
@@ -156,7 +156,7 @@ const PortalDoctorSlug = ({ params }: Props) => {
       <div className="mb-[10px]">
         <AsyncPaginate
           value={selected}
-          loadOptions={loadOptions}
+          loadOptions={getICD}
           onChange={setSelected}
           additional={{ page: 1 }}
           inputValue={inputValue}
