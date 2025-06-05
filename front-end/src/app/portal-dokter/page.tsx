@@ -75,8 +75,6 @@ const PortalDokter = () => {
       </div>
     );
 
-  console.log("Final doctor data:", finalDoctor);
-
   return (
     <div>
       <AdminHeader
