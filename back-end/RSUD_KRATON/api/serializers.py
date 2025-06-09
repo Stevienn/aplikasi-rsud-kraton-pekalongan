@@ -26,23 +26,13 @@ class PendaftaranSerializer(serializers.ModelSerializer):
             'sesi_praktek_dokter',
         ]
 
-class SesiPraktekSerializer(serializers.ModelSerializer):
-    data_pendaftaran = PendaftaranSerializer(many=True, read_only=True)
-    data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
-
-    class Meta:
-        model = sesi_praktek
-        fields = ['id', 'jam_sesi', 'jam_total', 'data_pendaftaran', 'data_pendaftaran_ids']
-
 class HariPraktekSerializer(serializers.ModelSerializer):
-    hari_praktek_set = SesiPraktekSerializer(many=True, read_only=True)
-
     class Meta:
         model = hari_praktek
         fields = ['id', 'hari', 'hari_praktek_set']
 
 class DokterSerializer(serializers.ModelSerializer):
-    schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
+    # schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
     class Meta:
         model = Dokter
         fields = '__all__'
@@ -53,7 +43,7 @@ class DokterWithoutScheduleSerializer(serializers.ModelSerializer):
         exclude = ['schedule_dokter', 'password_dokter']
 
 class DokterSpesialisSerializer(serializers.ModelSerializer):
-    schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
+    # schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
     class Meta:
         model = Dokter_spesialis
         fields = '__all__'
@@ -72,15 +62,6 @@ class PerawatSerializer(serializers.ModelSerializer):
     class Meta:
         model = perawat
         fields = '__all__'
-
-# class DiagnosaSerializer(serializers.ModelSerializer):
-#     data_pendaftaran = PendaftaranSerializer()
-#     diagnosa_icd_1 = IcdSerializer()
-#     diagnosa_icd_2 = IcdSerializer()
-
-#     class Meta:
-#         model = Diagnosa
-#         fields = '__all__'
 
 class HistorySerializer(serializers.ModelSerializer):
     data_dokter_umum = DokterWithoutScheduleSerializer(read_only=True, source='Dokter')
@@ -114,3 +95,14 @@ class RekapMedisSerializer(serializers.ModelSerializer):
     class Meta:
         model = rekap_medis
         fields = ['data_pasien', 'data_pasien_id', 'history', 'history_ids']
+
+class SchedulePraktekSerializer(serializers.ModelSerializer):
+    data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
+    data_pendaftaran = PendaftaranSerializer(many=True, read_only=True)
+    hari = HariPraktekSerializer(many=True, read_only=True)
+    dokter_umum = DokterSerializer(many=True, read_only=True)
+    dokter_spesialis = DokterSpesialisSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = schedule_praktek
+        fields = '__all__'

@@ -36,21 +36,12 @@ class hari_praktek(models.Model):
     def __str__(self):
         return (f"ID : {self.id}, Hari : {self.hari}")
 
-class sesi_praktek(models.Model):
-    hari_praktek = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name="hari_praktek_set")
-    jam_sesi = models.CharField(max_length=50)
-    data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name="data_pendaftaran_set", blank=True)
-    jam_total = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.id}: {self.hari_praktek.hari} - {self.jam_sesi}"
-
 class Dokter(models.Model):
     nama_dokter = models.CharField(max_length=50)
     password_dokter = models.CharField(max_length=20)
     email_dokter = models.CharField(max_length=50)
     image_dokter = models.CharField(max_length=100)
-    schedule_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
+    # schedule_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_set')
 
     def __str__(self):
         return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}")
@@ -61,11 +52,23 @@ class Dokter_spesialis(models.Model):
     email_dokter = models.CharField(max_length=50)
     spesialization = models.CharField(max_length=100)
     image_dokter = models.CharField(max_length=100)
-    schedule_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_spc_set')
+    # schedule_dokter = models.ManyToManyField(hari_praktek, related_name='hari_praktek_dokter_spc_set')
 
     def __str__(self):
         return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}, Spesialis  : {self.spesialization}")
-
+    
+class schedule_praktek(models.Model):
+    dokter_umum = models.ForeignKey(Dokter, on_delete=models.CASCADE, blank=True, null=True, related_name="dokter_umum_praktek_set")
+    dokter_spesialis = models.ForeignKey(Dokter_spesialis, on_delete=models.CASCADE, blank=True, null=True, related_name="dokter_umum_praktek_set")
+    data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name="data_pendaftaran_set", blank=True)
+    hari = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name="hari_praktek_set")
+    jam_mulai = models.CharField(max_length=100)
+    jam_selesai = models.CharField(max_length=100)
+    
+    def __str__(self):
+        dokter = self.dokter_umum if self.dokter_umum else self.dokter_spesialis
+        return (f"Id Praktek : {self.id}, Nama Dokter : {dokter}, Hari :{self.hari}")
+    
 class perawat(models.Model):
     #id_perawat = models.IntegerField()
     nama_perawat = models.CharField(max_length=50)
