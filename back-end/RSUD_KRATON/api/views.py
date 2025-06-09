@@ -43,9 +43,9 @@ class HariPraktekViewSet(viewsets.ModelViewSet):
     queryset = hari_praktek.objects.all()
     serializer_class = HariPraktekSerializer
     
-class SesiPraktekViewSet(viewsets.ModelViewSet):
-    queryset = sesi_praktek.objects.all()
-    serializer_class = SesiPraktekSerializer
+# class SesiPraktekViewSet(viewsets.ModelViewSet):
+#     queryset = sesi_praktek.objects.all()
+#     serializer_class = SesiPraktekSerializer
 
 class PerawatViewSet(viewsets.ModelViewSet):
     queryset = perawat.objects.all()
@@ -62,6 +62,10 @@ class HistoryViewSet(viewsets.ModelViewSet):
 class RekapMedisViewSet(viewsets.ModelViewSet):
     queryset = rekap_medis.objects.all()
     serializer_class = RekapMedisSerializer
+
+class SchedulePraktekViewSet(viewsets.ModelViewSet):
+    queryset = schedule_praktek.objects.all()
+    serializer_class = SchedulePraktekSerializer
 
 class LaporanIcdView(APIView):
     def get(self, request):
