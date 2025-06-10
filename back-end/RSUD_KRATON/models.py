@@ -58,16 +58,16 @@ class Dokter_spesialis(models.Model):
         return (f"Id Dokter : {self.id}, Nama Dokter : {self.nama_dokter}, Spesialis  : {self.spesialization}")
     
 class schedule_praktek(models.Model):
-    dokter_umum = models.ForeignKey(Dokter, on_delete=models.CASCADE, blank=True, null=True, related_name="dokter_umum_praktek_set")
-    dokter_spesialis = models.ForeignKey(Dokter_spesialis, on_delete=models.CASCADE, blank=True, null=True, related_name="dokter_umum_praktek_set")
+    dokter_umum = models.ManyToManyField(Dokter, blank=True, null=True, related_name="dokter_umum_praktek_set")
+    dokter_spesialis = models.ManyToManyField(Dokter_spesialis, blank=True, null=True, related_name="dokter_umum_praktek_set")
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name="data_pendaftaran_set", blank=True)
-    hari = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name="hari_praktek_set")
+    hari = models.ManyToManyField(hari_praktek, related_name="hari_praktek_set")
     jam_mulai = models.CharField(max_length=100)
     jam_selesai = models.CharField(max_length=100)
     
-    def __str__(self):
-        dokter = self.dokter_umum if self.dokter_umum else self.dokter_spesialis
-        return (f"Id Praktek : {self.id}, Nama Dokter : {dokter}, Hari :{self.hari}")
+    # def __str__(self):
+    #     dokter = self.dokter_umum if self.dokter_umum else self.dokter_spesialis
+    #     return (f"Id Praktek : {self.id}, Nama Dokter : {dokter}, Hari :{self.hari}")
     
 class perawat(models.Model):
     #id_perawat = models.IntegerField()
