@@ -83,7 +83,7 @@ const CustomTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.length === 0 ? (
+            {rows~.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
