@@ -25,7 +25,7 @@ class Pendaftaran(models.Model):
     tanggal_konsultasi = models.DateField()
     keluhan = models.CharField(max_length=100)
     nama_dokter = models.CharField(max_length=50)
-    sesi_praktek_dokter = models.CharField(max_length=50)
+    # sesi_praktek_dokter = models.CharField(max_length=50)
 
     def __str__(self):
         return (f'Tanggal : {self.tanggal_konsultasi}, Nama Dokter : {self.nama_dokter}, Sesi : {self.sesi_praktek_dokter}') 
