@@ -29,7 +29,7 @@ class PendaftaranSerializer(serializers.ModelSerializer):
 class HariPraktekSerializer(serializers.ModelSerializer):
     class Meta:
         model = hari_praktek
-        fields = ['id', 'hari', 'hari_praktek_set']
+        fields = ['id', 'hari']
 
 class DokterSerializer(serializers.ModelSerializer):
     # schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
@@ -37,10 +37,10 @@ class DokterSerializer(serializers.ModelSerializer):
         model = Dokter
         fields = '__all__'
 
-class DokterWithoutScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Dokter
-        exclude = ['schedule_dokter', 'password_dokter']
+# class DokterWithoutScheduleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Dokter
+#         exclude = ['schedule_dokter', 'password_dokter']
 
 class DokterSpesialisSerializer(serializers.ModelSerializer):
     # schedule_dokter = HariPraktekSerializer(many=True, read_only=True)
@@ -48,10 +48,10 @@ class DokterSpesialisSerializer(serializers.ModelSerializer):
         model = Dokter_spesialis
         fields = '__all__'
         
-class DokterSpesialisWithoutScheduleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Dokter_spesialis
-        exclude = ['schedule_dokter', 'password_dokter']
+# class DokterSpesialisWithoutScheduleSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Dokter_spesialis
+#         exclude = ['schedule_dokter', 'password_dokter']
 
 class IcdSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,11 +64,11 @@ class PerawatSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HistorySerializer(serializers.ModelSerializer):
-    data_dokter_umum = DokterWithoutScheduleSerializer(read_only=True, source='Dokter')
+    data_dokter_umum = DokterSerializer(read_only=True, source='Dokter')
     data_dokter_umum_id = serializers.PrimaryKeyRelatedField(
         queryset=Dokter.objects.all(), write_only=True, source='Dokter', required=False, allow_null=True
     )
-    data_dokter_spesialis = DokterSpesialisWithoutScheduleSerializer(read_only=True, source='Dokter_spesialis')
+    data_dokter_spesialis = DokterSpesialisSerializer(read_only=True, source='Dokter_spesialis')
     data_dokter_spesialis_id = serializers.PrimaryKeyRelatedField(
         queryset=Dokter_spesialis.objects.all(), write_only=True, source='Dokter_spesialis', required=False, allow_null=True
     )
