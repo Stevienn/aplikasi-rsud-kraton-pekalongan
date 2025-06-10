@@ -16,6 +16,7 @@ router.register(r'Pendaftaran', PendaftaranViewSet)
 # router.register(r'Diagnosa', DiagnosaViewSet)
 router.register(r'History', HistoryViewSet)
 router.register(r'RekapMedis', RekapMedisViewSet)
+router.register(r'SchedulePraktek', SchedulePraktekViewSet)
 
 urlpatterns = router.urls
 

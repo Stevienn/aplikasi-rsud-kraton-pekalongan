@@ -43,10 +43,6 @@ class HariPraktekViewSet(viewsets.ModelViewSet):
     queryset = hari_praktek.objects.all()
     serializer_class = HariPraktekSerializer
     
-# class SesiPraktekViewSet(viewsets.ModelViewSet):
-#     queryset = sesi_praktek.objects.all()
-#     serializer_class = SesiPraktekSerializer
-
 class PerawatViewSet(viewsets.ModelViewSet):
     queryset = perawat.objects.all()
     serializer_class = PerawatSerializer
