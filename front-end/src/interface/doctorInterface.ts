@@ -21,7 +21,6 @@ interface IDoctor {
   email_dokter: string;
   password_dokter: string;
   spesialization?: string;
-  schedule_dokter: ISchedule[];
 }
 
 interface IDoctorSpc {
@@ -31,7 +30,6 @@ interface IDoctorSpc {
   email_dokter: string;
   password_dokter: string;
   spesialization: string;
-  schedule_dokter: ISchedule[];
 }
 
 interface IUserDoctor {
