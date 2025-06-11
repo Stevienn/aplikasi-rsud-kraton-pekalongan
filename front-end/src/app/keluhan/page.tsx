@@ -88,6 +88,8 @@ const Keluhan = () => {
       tanggal_konsultasi: regisDate,
       keluhan: keluhan,
       nama_dokter: selectedDoctor.nama_dokter,
+      sesi_praktek_dokter:
+        selectedSession.jam_mulai + " - " + selectedSession.jam_akhir,
     };
     createRegis.mutate(newRegis, {
       onSuccess: () => {

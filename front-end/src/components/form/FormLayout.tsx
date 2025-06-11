@@ -7,7 +7,7 @@ interface IFormLayoutProps {
 
 const FormLayout = ({ title, children }: IFormLayoutProps) => {
   return (
-    <div className="bg-gradient-to-b from-blue-secondary to-blue-tertiary h-[100dvh] font-inria-sans">
+    <div className="bg-gradient-to-b from-blue-secondary to-blue-tertiary h-[100%] font-inria-sans">
       <div className="flex flex-col items-center pt-[50px] py-[45px]">
         <h1 className="text-white md:text-[64px] text-[50px] font-bold">
           {title}
