@@ -23,7 +23,6 @@ class PendaftaranSerializer(serializers.ModelSerializer):
             'tanggal_konsultasi',
             'keluhan',
             'nama_dokter',
-            'sesi_praktek_dokter',
         ]
 
 class HariPraktekSerializer(serializers.ModelSerializer):
@@ -99,9 +98,9 @@ class RekapMedisSerializer(serializers.ModelSerializer):
 class SchedulePraktekSerializer(serializers.ModelSerializer):
     data_pendaftaran_ids = serializers.PrimaryKeyRelatedField(queryset=Pendaftaran.objects.all(), write_only=True, many=True, source='data_pendaftaran')
     data_pendaftaran = PendaftaranSerializer(many=True, read_only=True)
-    hari = HariPraktekSerializer(many=True, read_only=True)
-    dokter_umum = DokterSerializer(many=True, read_only=True)
-    dokter_spesialis = DokterSpesialisSerializer(many=True, read_only=True)
+    hari = HariPraktekSerializer(read_only=True)
+    dokter_umum = DokterSerializer(read_only=True)
+    dokter_spesialis = DokterSpesialisSerializer(read_only=True)
     
     class Meta:
         model = schedule_praktek

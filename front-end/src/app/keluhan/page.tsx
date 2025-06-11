@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { IUserData } from "@/interface/patientInterface";
 import { useGetDoctors, useUpdateDoctor } from "@/hooks/api/useDoctor";
 import { useUpdateUser } from "@/hooks/api/useUser";
-import { useUpdateSchedule } from "@/hooks/api/useSchedule";
+import { useGetSchedule, useUpdateSchedule } from "@/hooks/api/useSchedule";
 import { useCreateRegistration } from "@/hooks/api/useRegistration";
 
 const Keluhan = () => {
@@ -35,6 +35,11 @@ const Keluhan = () => {
 
   const { mutate: updateUser } = useUpdateUser();
   const { mutate: updateSchedule } = useUpdateSchedule();
+  const { data: getScheduleDoctor } = useGetSchedule();
+
+  const scheduleUmum = getScheduleDoctor?.filter(
+    (item) => item.dokter_umum !== null && item.dokter_spesialis === null
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -83,7 +88,6 @@ const Keluhan = () => {
       tanggal_konsultasi: regisDate,
       keluhan: keluhan,
       nama_dokter: selectedDoctor.nama_dokter,
-      sesi_praktek_dokter: selectedSession.jam_sesi,
     };
     createRegis.mutate(newRegis, {
       onSuccess: () => {
@@ -111,12 +115,11 @@ const Keluhan = () => {
     let selectedDoctor = null;
     let selectedSession = null;
     doctorUmum?.forEach((doctor) => {
-      const getDoctorDay = doctor.schedule_dokter.find(
-        (day) => day.hari === dayName
+      const getDoctorDay = scheduleUmum.filter(
+        (day) => day.hari.hari === dayName
       );
-
       if (getDoctorDay) {
-        getDoctorDay.hari_praktek_set.forEach((session) => {
+        getDoctorDay.forEach((session) => {
           const count = session.data_pendaftaran.length;
 
           if (count < minRegistrations) {
@@ -127,7 +130,7 @@ const Keluhan = () => {
         });
       }
     });
-    // console.log(selectedDoctor, selectedSession);
+
     handleRegistration(selectedSession, selectedDoctor);
   };
 

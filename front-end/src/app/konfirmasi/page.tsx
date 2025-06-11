@@ -6,6 +6,7 @@ import Button from "@/components/form/Button";
 import FormLayout from "@/components/form/FormLayout";
 import InputField from "@/components/form/InputField";
 import { useGetRegistrationById } from "@/hooks/api/useRegistration";
+import { useGetSchedule } from "@/hooks/api/useSchedule";
 import { IUserData } from "@/interface/patientInterface";
 import React, { useEffect, useState } from "react";
 
@@ -23,6 +24,10 @@ const Konfirmasi = () => {
   const { data: pendaftaran, isLoading } = useGetRegistrationById(
     userData?.user?.ID_BPJS
   );
+
+  const { data: getSchedule } = useGetSchedule();
+
+  console.log(getSchedule);
 
   const handleLogout = async () => {
     await logout();

@@ -1,10 +1,10 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "./form/Button";
 import { IDoctor } from "@/interface/doctorInterface";
 import Modal from "./Modal";
 
-import _ from "lodash";
+import _, { forEach } from "lodash";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -17,8 +17,10 @@ import {
   clearTempRegistration,
   getTempRegistration,
 } from "./assets/tempRegistration";
-import { useUpdateSchedule } from "@/hooks/api/useSchedule";
+import { useGetSchedule, useUpdateSchedule } from "@/hooks/api/useSchedule";
 import { useUpdateUser } from "@/hooks/api/useUser";
+
+const hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 interface ICardProps {
   doctorData: IDoctor;
@@ -34,6 +36,8 @@ const Card = ({
   customCategoryClass,
 }: ICardProps) => {
   dayjs.locale("id");
+  const { data: getScheduleDoctor } = useGetSchedule();
+
   const [modalSchedule, setModalSchedule] = useState(false);
   const [modalSuccess, setModalSuccess] = useState(false);
   const [modalRegistration, setModalRegistration] = useState(false);
@@ -41,6 +45,8 @@ const Card = ({
   const [dayName, setDayName] = useState("");
   const [selectedSession, setSelectedSession] = useState("");
   const keluhan = getTempRegistration();
+
+  const [scheduleDoctor, setScheduleDoctor] = useState([]);
 
   const createRegis = useCreateRegistration();
 
@@ -54,17 +60,23 @@ const Card = ({
     if (selectedSession == "") {
       alert("Mohon pilih sesi terlebih dahulu");
     } else {
-      const getDay = doctorData.schedule_dokter.find(
-        (data) => dayName == data.hari
-      );
+      const getDay = scheduleDoctor.filter((data) => dayName == data.hari.hari);
+
       if (!getDay) {
         console.error(`Jadwal hari ${dayName} tidak ditemukan.`);
         return;
       }
-      const totalRegis = getDay.hari_praktek_set.reduce(
+      const totalRegis = getDay.reduce(
         (acc, sesi) => acc + sesi.data_pendaftaran.length,
         0
       );
+      console.log(totalRegis);
+
+      // const getSession = getDay?.find(
+      //   (sesi) => sesi.jam_mulai === selectedSession
+      // );
+
+      // console.log(getSession);
 
       updateUser({
         id: userData.user.ID_BPJS,
@@ -79,12 +91,11 @@ const Card = ({
         tanggal_konsultasi: regisDate,
         keluhan: keluhan.keluhan,
         nama_dokter: doctorData.nama_dokter,
-        sesi_praktek_dokter: selectedSession,
       };
       createRegis.mutate(newRegis, {
         onSuccess: () => {
-          const getSession = getDay?.hari_praktek_set.find(
-            (sesi) => sesi.jam_sesi === selectedSession
+          const getSession = getDay?.find(
+            (sesi) => sesi.jam_mulai === selectedSession
           );
 
           const existingIds =
@@ -109,30 +120,89 @@ const Card = ({
     }
   };
 
-  const ScheduleDisplay = ({ schedule }: any) => {
+  console.log(categories);
+
+  console.log(scheduleDoctor);
+
+  const ScheduleDisplay = () => {
+    useEffect(() => {
+      const fetchSchedule = () => {
+        if (categories === "Dokter Umum") {
+          const filteredSchedule = getScheduleDoctor?.filter(
+            (data) => data.dokter_umum.id === doctorData.id
+          );
+          setScheduleDoctor(filteredSchedule);
+        } else if (categories !== "Dokter Umum") {
+          console.log("masuk sini");
+          const filteredSchedule = getScheduleDoctor?.filter(
+            (data) => data.dokter_spesialis.id === doctorData.id
+          );
+          setScheduleDoctor(filteredSchedule);
+        }
+      };
+      fetchSchedule();
+    }, [categories, doctorData, getScheduleDoctor]);
+    const scheduleByDay = {};
+
+    scheduleDoctor?.forEach((schedule) => {
+      const day = schedule.hari.hari;
+      if (!scheduleByDay[day]) {
+        scheduleByDay[day] = [];
+      }
+      scheduleByDay[day].push(schedule);
+    });
     return (
       <div className="mt-[-20px]">
-        {schedule?.map((schedule, index) => (
-          <>
-            <div key={index} className="mt-[10px]">
-              <p className="font-semibold underline">{schedule.hari}</p>
-            </div>
-            {schedule.hari_praktek_set.map((schedule, index) => (
-              <div key={index} className="flex gap-[5px]">
-                <p className="font-semibold">Sesi {index + 1} : </p>
-                <p>{schedule.jam_sesi}</p>
+        {hari.map((dayName) => {
+          const daySchedules = scheduleByDay[dayName];
+          if (!daySchedules || daySchedules.length === 0) return null;
+
+          return (
+            <div key={dayName} className="mb-4">
+              <div className="mt-[10px]">
+                <p className="font-semibold underline">{dayName}</p>
               </div>
-            ))}
-          </>
-        ))}
+
+              {daySchedules.map((schedule, index) => (
+                <div key={`${dayName}-${index}`} className="flex gap-[5px]">
+                  <p className="font-semibold">Sesi {index + 1}:</p>
+                  <p>
+                    {schedule.jam_mulai} - {schedule.jam_selesai}
+                  </p>
+                </div>
+              ))}
+            </div>
+          );
+        })}
       </div>
     );
   };
 
-  const SessionComponent = ({ session }: any) => {
-    const getDay = session.find((data) => dayName == data.hari);
+  const SessionComponent = () => {
+    useEffect(() => {
+      const fetchSchedule = () => {
+        if (!doctorData?.id || !getScheduleDoctor) return;
 
-    const getSession = getDay?.hari_praktek_set;
+        const filteredSchedule = getScheduleDoctor.filter((data) =>
+          categories === "Dokter Umum"
+            ? data.dokter_umum?.id === doctorData.id
+            : data.dokter_spesialis?.id === doctorData.id
+        );
+
+        // Only update if the schedule actually changed
+        if (
+          JSON.stringify(filteredSchedule) !== JSON.stringify(scheduleDoctor)
+        ) {
+          setScheduleDoctor(filteredSchedule);
+        }
+      };
+
+      fetchSchedule();
+    }, [categories, doctorData?.id, getScheduleDoctor]); // More specific dependencies
+
+    const getDay = scheduleDoctor.filter((data) => dayName == data.hari.hari);
+
+    console.log(getDay);
 
     return (
       <div>
@@ -142,10 +212,10 @@ const Card = ({
             value={selectedSession}
             onChange={(event) => setSelectedSession(event?.target.value)}
           >
-            {getSession?.length > 0 ? (
-              getSession.map((sessionData) => (
-                <MenuItem key={sessionData.id} value={sessionData.jam_sesi}>
-                  {sessionData.jam_sesi}
+            {getDay?.length > 0 ? (
+              getDay.map((sessionData) => (
+                <MenuItem key={sessionData.id} value={sessionData.jam_mulai}>
+                  {sessionData.jam_mulai} - {sessionData.jam_selesai}
                 </MenuItem>
               ))
             ) : (
@@ -187,7 +257,7 @@ const Card = ({
         <Modal width="w-[400px] md:w-[500px]">
           <Modal.Header title={`Jadwal Praktek ${doctorData.nama_dokter}`} />
           <Modal.Body>
-            <ScheduleDisplay schedule={doctorData.schedule_dokter} />
+            <ScheduleDisplay />
             <></>
           </Modal.Body>
           <Modal.Footer>
@@ -228,7 +298,7 @@ const Card = ({
                 </p>
               </div>
               <div>
-                <SessionComponent session={doctorData.schedule_dokter} />
+                <SessionComponent />
               </div>
             </>
           </Modal.Body>
