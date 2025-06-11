@@ -23,6 +23,7 @@ class PendaftaranSerializer(serializers.ModelSerializer):
             'tanggal_konsultasi',
             'keluhan',
             'nama_dokter',
+            'sesi_praktek_dokter'
         ]
 
 class HariPraktekSerializer(serializers.ModelSerializer):

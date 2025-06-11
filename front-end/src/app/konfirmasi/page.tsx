@@ -78,6 +78,14 @@ const Konfirmasi = () => {
             value={pendaftaran.nama_dokter}
             isDisabled
           />
+          <InputField
+            name="Tanggal Konsultasi"
+            type="text"
+            customClass="mb-[10px]"
+            inputWidth="w-full md:w-[900px]"
+            value={pendaftaran.tanggal_konsultasi}
+            isDisabled
+          />
           {/* Jam Praktek */}
           <InputField
             name="Sesi Praktek"

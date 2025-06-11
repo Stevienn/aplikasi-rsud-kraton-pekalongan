@@ -70,7 +70,6 @@ const Card = ({
         (acc, sesi) => acc + sesi.data_pendaftaran.length,
         0
       );
-      console.log(totalRegis);
 
       // const getSession = getDay?.find(
       //   (sesi) => sesi.jam_mulai === selectedSession
@@ -85,19 +84,25 @@ const Card = ({
         },
       });
 
+      const getSession = getDay?.find(
+        (sesi) => sesi.jam_mulai === selectedSession
+      );
+
+      const sesi_praktek =
+        getSession.jam_mulai + " - " + getSession.jam_selesai;
+
+      console.log(sesi_praktek);
+
       const regisDate = date.format("YYYY-MM-DD");
       const newRegis = {
         data_pasien_id: userData.user.ID_BPJS,
         tanggal_konsultasi: regisDate,
         keluhan: keluhan.keluhan,
         nama_dokter: doctorData.nama_dokter,
+        sesi_praktek_dokter: sesi_praktek,
       };
       createRegis.mutate(newRegis, {
         onSuccess: () => {
-          const getSession = getDay?.find(
-            (sesi) => sesi.jam_mulai === selectedSession
-          );
-
           const existingIds =
             getSession?.data_pendaftaran.map((d) => d.data_pasien.ID_BPJS) ||
             [];
