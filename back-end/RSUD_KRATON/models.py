@@ -59,7 +59,7 @@ class Dokter_spesialis(models.Model):
     
 class schedule_praktek(models.Model):
     dokter_umum = models.ForeignKey(Dokter, blank=True, on_delete=models.CASCADE, null=True, related_name="dokter_umum_praktek_set")
-    dokter_spesialis = models.ForeignKey(Dokter, blank=True, on_delete=models.CASCADE, null=True, related_name="dokter_spesialis_praktek_set")
+    dokter_spesialis = models.ForeignKey(Dokter_spesialis, blank=True, on_delete=models.CASCADE, null=True, related_name="dokter_spesialis_praktek_set")
     data_pendaftaran = models.ManyToManyField(Pendaftaran, related_name="data_pendaftaran_set", blank=True)
     hari = models.ForeignKey(hari_praktek, on_delete=models.CASCADE, related_name="hari_praktek_set")
     jam_mulai = models.CharField(max_length=100)
