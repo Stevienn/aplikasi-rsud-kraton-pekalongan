@@ -20,9 +20,9 @@ class DokterViewSet(viewsets.ModelViewSet):
     queryset = Dokter.objects.all()
     serializer_class = DokterSerializer
 
-class DokterSpesialisViewSet(viewsets.ModelViewSet):
-    queryset = Dokter_spesialis.objects.all()
-    serializer_class = DokterSpesialisSerializer
+class SpesialisasiViewSet(viewsets.ModelViewSet):
+    queryset = Spesialisasi.objects.all()
+    serializer_class = SpesialisasiSerializer
     
 class ICDPagination(PageNumberPagination):
     page_size = 10  # tampilkan 10 dulu
@@ -54,10 +54,6 @@ class PendaftaranViewSet(viewsets.ModelViewSet):
 class HistoryViewSet(viewsets.ModelViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
-
-class RekapMedisViewSet(viewsets.ModelViewSet):
-    queryset = rekap_medis.objects.all()
-    serializer_class = RekapMedisSerializer
 
 class SchedulePraktekViewSet(viewsets.ModelViewSet):
     queryset = schedule_praktek.objects.all()
@@ -151,7 +147,7 @@ class LaporanDokterView(APIView):
             bulan = bulan_indonesia[item['bulan']]
             tahun = item['tahun']
             
-            dokter_umum_data = []
+            dokter_data = []
             
             for dokter in Dokter.objects.all():
                 jumlah_pasien = History.objects.filter(
@@ -161,33 +157,18 @@ class LaporanDokterView(APIView):
                 ).count()
                 
                 if jumlah_pasien  > 0:
-                    dokter_umum_data.append({
+                    spesialisasi_nama = dokter.spesialisasi.nama_spesialisasi if dokter.spesialisasi else "-"
+                    dokter_data.append({
                         'id': dokter.id,
                         'nama_dokter': dokter.nama_dokter,
-                        'spesialisasi': 'Dokter Umum',
+                        'spesialisasi': spesialisasi_nama,
                         'jumlah_pasien': jumlah_pasien
                     })
-            
-            dokter_spesialis_data = []
-            for dokter in Dokter_spesialis.objects.all():
-                jumlah_pasien = History.objects.filter(
-                    Dokter_spesialis=dokter,
-                    tanggal_konsultasi__month=bulan_angka,
-                    tanggal_konsultasi__year=tahun
-                ).count()
-                
-                if jumlah_pasien > 0:
-                    dokter_spesialis_data.append({
-                        'id': dokter.id,
-                        'nama_dokter': dokter.nama_dokter,
-                        'spesialisasi': dokter.spesialization,
-                        'jumlah_pasien': jumlah_pasien
-                    })
+
             data.append({
                 'bulan': bulan,
                 'tahun': tahun,
-                'dokter_umum': dokter_umum_data,
-                'dokter_spesialis': dokter_spesialis_data
+                'dokter_umum': dokter_data
             })
 
         return Response(data)
@@ -255,26 +236,30 @@ def api_kirim_email(request):
         return Response({"error": "id_bpjs harus disertakan"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
+        # Ambil data pasien
         pasien = Pasien.objects.get(ID_BPJS=id_bpjs)
 
         if not pasien.email_pasien:
             return Response({"error": "Email pasien tidak tersedia"}, status=status.HTTP_400_BAD_REQUEST)
 
-        rekap = rekap_medis.objects.get(ID_BPJS=pasien)
-        latest_history = rekap.history.order_by('-id').first()
-        
+        # Ambil history terakhir dari M2M pasien.rekap_medis
+        latest_history = pasien.rekap_medis.order_by('-id').first()
+
+        if not latest_history:
+            return Response({"error": "Riwayat konsultasi tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Data diagnosa
         diagnosa_sub = latest_history.diagnosa_sub if latest_history.diagnosa_sub else "-"
         diagnosa_primary = latest_history.diagnosa_primary.nama_diagnosa if latest_history.diagnosa_primary else "-"
         diagnosa_secondary = latest_history.diagnosa_secondary.nama_diagnosa if latest_history.diagnosa_secondary else "-"
-        
-        dokter_umum = latest_history.Dokter.nama_dokter if latest_history.Dokter else ""
-        dokter_spesialis = latest_history.Dokter_spesialis.nama_dokter if latest_history.Dokter_spesialis else ""
 
+        dokter = latest_history.Dokter.nama_dokter if latest_history.Dokter else ""
 
+        # Format email
         subject = f"Hasil Konsultasi Anda - {latest_history.tanggal_konsultasi}"
         message = f"""Halo {pasien.nama},
 
-Hasil konsultasi Anda pada {latest_history.tanggal_konsultasi} bersama Dokter {dokter_umum} {dokter_spesialis} adalah:
+Hasil konsultasi Anda pada {latest_history.tanggal_konsultasi} bersama Dokter {dokter} adalah:
 Keluhan: {latest_history.keluhan}
 Diagnosa : {diagnosa_sub}
 Diagnosa Utama: {diagnosa_primary}
@@ -291,16 +276,10 @@ Terima kasih telah berkonsultasi di RSUD KRATON PEKALONGAN 🙏
             fail_silently=False,
         )
 
-        return Response({"success": True, "message": "Email berhasil dikirim" f"{diagnosa_sub}" }, status=status.HTTP_200_OK)
+        return Response({"success": True, "message": "Email berhasil dikirim"}, status=status.HTTP_200_OK)
 
     except Pasien.DoesNotExist:
         return Response({"error": "Pasien tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-    
-    except rekap_medis.DoesNotExist:
-        return Response({"error": "Rekap medis tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-
-    except History.DoesNotExist:
-        return Response({"error": "Riwayat konsultasi tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
         return Response({"error": f"Terjadi kesalahan: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
