@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import CustomTable from "./CustomTable";
-import { useGetRekapMedis } from "@/hooks/api/useRekapMedis";
+
 import { TextField } from "@mui/material";
+import { useGetUsers } from "@/hooks/api/useUser";
 
 const columns = [
   {
@@ -32,18 +33,18 @@ const columns = [
 ];
 
 const RekapMedisComponent = ({ id, specialization, doctor }: any) => {
-  const { data: dataRM, isLoading } = useGetRekapMedis();
+  const { data: dataPasien, isLoading } = useGetUsers();
   const [searchTerm, setSearchTerm] = useState("");
 
   const rows = useMemo(() => {
-    if (!dataRM) return [];
-    return dataRM.map((data) => ({
-      id: data.data_pasien?.ID_BPJS,
-      namaPasien: data.data_pasien?.nama,
-      jenisKelamin: data.data_pasien?.jenis_kelamin,
-      tanggalLahir: data.data_pasien?.tanggal_lahir,
+    if (!dataPasien) return [];
+    return dataPasien.map((data) => ({
+      id: data.ID_BPJS,
+      namaPasien: data.nama,
+      jenisKelamin: data.jenis_kelamin,
+      tanggalLahir: data.tanggal_lahir,
     }));
-  }, [dataRM]);
+  }, [dataPasien]);
 
   const filteredRows = useMemo(() => {
     if (!searchTerm) return rows;

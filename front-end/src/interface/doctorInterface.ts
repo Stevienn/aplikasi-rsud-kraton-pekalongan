@@ -20,16 +20,12 @@ interface IDoctor {
   image_dokter: string;
   email_dokter: string;
   password_dokter: string;
-  spesialization?: string;
+  spesialisasi_dokter: ISpesialisasi;
 }
 
-interface IDoctorSpc {
+interface ISpesialisasi {
   id: number;
-  nama_dokter: string;
-  image_dokter: string;
-  email_dokter: string;
-  password_dokter: string;
-  spesialization: string;
+  nama_spesialisasi: string;
 }
 
 interface IUserDoctor {

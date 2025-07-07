@@ -1,6 +1,11 @@
 import { IUser } from "@/interface/patientInterface";
 import axios from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 
 export const useGetUsers = () => {
   return useQuery({
@@ -9,6 +14,21 @@ export const useGetUsers = () => {
       const response = await axios.get("/Pasien");
       return response.data;
     },
+  });
+};
+
+export const useGetUserById = (
+  id: number,
+  options?: UseQueryOptions<IUser>
+) => {
+  return useQuery<IUser>({
+    queryKey: ["doctor", id],
+    queryFn: async () => {
+      const response = await axios.get(`/Pasien/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+    ...options,
   });
 };
 

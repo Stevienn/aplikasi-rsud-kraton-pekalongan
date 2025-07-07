@@ -13,11 +13,6 @@ import {
   useDeleteRegistrationById,
   useGetRegistrationById,
 } from "@/hooks/api/useRegistration";
-import {
-  useCreateRekapMedis,
-  useGetRekapMedis,
-  useUpdateRekapMedis,
-} from "@/hooks/api/useRekapMedis";
 import { useUpdateUser } from "@/hooks/api/useUser";
 import { IUserDoctor } from "@/interface/doctorInterface";
 import { redirect, useRouter } from "next/navigation";
@@ -48,25 +43,17 @@ const PortalDoctorSlug = ({ params }: Props) => {
     fetchUserData();
   }, []);
 
-  const { data: doctor, isLoading: isLoadingDoctor } = useGetDoctorById(
-    doctorData?.user.id,
-    {
-      enabled: !!doctorData && !doctorData.user.spesialization,
-    }
-  );
-
-  const { data: rekapData, refetch: refetchRekapMedis } = useGetRekapMedis();
-
-  const { data: doctorSpc, isLoading: isLoadingDoctorSpc } =
-    useGetSpecialistDoctorsById(doctorData?.user.id, {
-      enabled: !!doctorData && !!doctorData.user.spesialization,
-    });
-
-  const dataDoctor = doctorData?.user.spesialization ? doctorSpc : doctor;
+  const {
+    data: dataDoctor,
+    isLoading,
+    refetch,
+  } = useGetDoctorById(doctorData?.user.id);
 
   const [diagnosaSub, setDiagnosaSub] = useState("");
 
   const { data: dataPatient } = useGetRegistrationById(slug);
+
+  // console.log(dataDoctor?.id);
 
   const [selectedPrimary, setSelectedPrimary] = useState();
   const [selectedSecondary, setSelectedSecondary] = useState();
@@ -84,7 +71,6 @@ const PortalDoctorSlug = ({ params }: Props) => {
     });
 
     const { results, next } = response.data;
-~~
     return {
       options: results.map((item) => ({
         value: item.id,
@@ -100,12 +86,8 @@ const PortalDoctorSlug = ({ params }: Props) => {
 
   const deleteRegis = useDeleteRegistrationById();
 
-  const createRekap = useCreateRekapMedis();
   const createHistory = useCreateHistory();
-  const updateRekapMedis = useUpdateRekapMedis();
   const updateUser = useUpdateUser();
-
-  const loading = doctorData === null || isLoadingDoctor || isLoadingDoctorSpc;
 
   const sendEmail = async () => {
     setLoadingEmail(true);
@@ -126,7 +108,7 @@ const PortalDoctorSlug = ({ params }: Props) => {
     }
   };
 
-  if (loading)
+  if (isLoading)
     return (
       <div>
         <AdminHeader
@@ -178,24 +160,8 @@ const PortalDoctorSlug = ({ params }: Props) => {
       return;
     }
     try {
-      // Check Pasien
-      let pasienInRekap = rekapData?.find(
-        (r) => r.data_pasien?.ID_BPJS === dataPatient.data_pasien.ID_BPJS
-      );
-
-      if (!pasienInRekap) {
-        const createdRekap = await createRekap.mutateAsync({
-          data_pasien_id: dataPatient.data_pasien.ID_BPJS,
-          history_ids: [],
-        });
-        pasienInRekap = createdRekap;
-        await refetchRekapMedis();
-      }
-
       const newHistory = {
-        ...(doctorData.user.spesialization
-          ? { data_dokter_spesialis_id: dataDoctor.id }
-          : { data_dokter_umum_id: dataDoctor.id }),
+        data_dokter_id: dataDoctor.id,
         diagnosa_primary_id: selectedPrimary.data.id,
         diagnosa_secondary_id: selectedSecondary?.data.id,
         tanggal_konsultasi: dataPatient.tanggal_konsultasi,
@@ -204,21 +170,18 @@ const PortalDoctorSlug = ({ params }: Props) => {
       };
       const createdHistory = await createHistory.mutateAsync(newHistory);
 
-      const existingIds = pasienInRekap?.history?.map((h) => h.id || []);
+      const existingIds = dataPatient?.data_pasien?.rekap_medis?.map(
+        (h) => h.id || []
+      );
 
       const updatedHistoryIds = [...(existingIds || []), createdHistory.id];
 
-      await updateRekapMedis.mutateAsync({
+      await updateUser.mutateAsync({
         id: dataPatient.data_pasien.ID_BPJS,
-        data: { history_ids: updatedHistoryIds },
+        data: { rekap_medis_ids: updatedHistoryIds, nomor_urut: null },
       });
 
       await deleteRegis.mutateAsync(dataPatient.data_pasien.ID_BPJS);
-
-      await updateUser.mutateAsync({
-        id: dataPatient.data_pasien.ID_BPJS,
-        data: { nomor_urut: null },
-      });
 
       sendEmail();
       setIsModalConfirm(true);

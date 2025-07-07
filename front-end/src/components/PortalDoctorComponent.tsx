@@ -5,7 +5,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 import CustomTable from "./CustomTable";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useGetSchedule } from "@/hooks/api/useSchedule";
 
 const columns = [
   {
@@ -42,14 +43,25 @@ const columns = [
 
 dayjs.locale("id");
 
-const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
+const PortalDoctorComponent = ({ doctor, refetchDoctor }: any) => {
+  const { data: scheduleData } = useGetSchedule();
+
+  const router = useRouter();
+
+  const scheduleDoctor = useMemo(() => {
+    return scheduleData?.filter(
+      (schedule) => schedule.dokter_umum.id === doctor.id
+    );
+  }, [scheduleData]);
+
+  console.log(scheduleDoctor);
+
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [selectedSession, setSelectedSession] = useState("");
-  const [isModal, setIsModal] = useState(false);
-  const [dataPatient, setIsDataPatient] = useState();
-  const [keluhan, setKeluhan] = useState("");
-
   const today = selectedDate.format("dddd");
+
+  const [dataPatient, setIsDataPatient] = useState();
+
   const disabled = dayjs();
 
   const disabledDate = disabled.add(7, "day");
@@ -58,13 +70,19 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
     setSelectedDate(newValue);
   };
 
-  const todayPatient = doctor?.schedule_dokter.find(
-    (data) => today == data.hari
+  const todayPatient = useMemo(() => {
+    return scheduleDoctor?.filter((data) => today == data.hari.hari);
+  }, [scheduleDoctor, today]);
+
+  const todaySessionPatient = todayPatient?.find(
+    (data) => selectedSession == data.jam_mulai
   );
 
-  const todaySessionPatient = todayPatient?.hari_praktek_set.find(
-    (data) => selectedSession == data.jam_sesi
-  );
+  useEffect(() => {
+    if (todayPatient?.length > 0) {
+      setSelectedSession(todayPatient[0].jam_mulai);
+    }
+  }, [today, todayPatient]);
 
   const rows = useMemo(() => {
     if (!todaySessionPatient) return [];
@@ -74,21 +92,13 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
       noBPJS: data.data_pasien?.ID_BPJS,
       jenisKelamin: data.data_pasien?.jenis_kelamin,
       tanggalLahir: data.data_pasien?.tanggal_lahir,
-      keluhan: data.keluhan,
     }));
   }, [todaySessionPatient]);
 
   const SessionComponent = ({ session }) => {
-    const getDay = session.find((data) => today == data.hari);
+    const getDay = session?.filter((data) => today == data.hari.hari);
 
-    const getSession = getDay?.hari_praktek_set;
-
-    // Bikin Default Value
-    useEffect(() => {
-      if (getSession?.length > 0 && !selectedSession) {
-        setSelectedSession(getSession[0].jam_sesi);
-      }
-    }, [getSession, selectedSession]);
+    console.log("selectedSession", selectedSession);
 
     return (
       <div>
@@ -100,10 +110,10 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
             value={selectedSession}
             onChange={(event) => setSelectedSession(event?.target.value)}
           >
-            {getSession?.length > 0 ? (
-              getSession.map((sessionData) => (
-                <MenuItem key={sessionData.id} value={sessionData.jam_sesi}>
-                  {sessionData.jam_sesi}
+            {getDay?.length > 0 ? (
+              getDay?.map((sessionData) => (
+                <MenuItem key={sessionData.id} value={sessionData.jam_mulai}>
+                  {`${sessionData.jam_mulai} - ${sessionData.jam_selesai}`}
                 </MenuItem>
               ))
             ) : (
@@ -117,14 +127,14 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
     );
   };
 
-  const handleAction = (patientId: string, keluhan: string) => {
-    setKeluhan(keluhan);
+  const handleAction = (patientId: string) => {
+    console.log("masuk aksi");
     todaySessionPatient?.data_pendaftaran.forEach((data) => {
       if (data.data_pasien?.ID_BPJS == patientId) {
         setIsDataPatient(data.data_pasien);
       }
     });
-    redirect(`/portal-dokter/${patientId}`);
+    router.push(`/portal-dokter/${patientId}`);
   };
 
   return (
@@ -133,7 +143,7 @@ const PortalDoctorComponent = ({ doctorData, doctor, refetchDoctor }: any) => {
       id="shared-modal"
     >
       <div className="mb-[20px] flex justify-between">
-        <SessionComponent session={doctor?.schedule_dokter} />
+        <SessionComponent session={scheduleDoctor} />
         <div>
           <p className="font-semibold mb-[5px] font-inter-sans text-[20px]">
             Pilih Tanggal
