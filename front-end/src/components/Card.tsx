@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Button from "./form/Button";
 import { IDoctor } from "@/interface/doctorInterface";
 import Modal from "./Modal";
@@ -20,8 +20,6 @@ import {
 import { useGetSchedule, useUpdateSchedule } from "@/hooks/api/useSchedule";
 import { useUpdateUser } from "@/hooks/api/useUser";
 
-const hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-
 interface ICardProps {
   doctorData: IDoctor;
   categories: string;
@@ -36,7 +34,7 @@ const Card = ({
   customCategoryClass,
 }: ICardProps) => {
   dayjs.locale("id");
-  const { data: getScheduleDoctor } = useGetSchedule();
+  const { data: scheduleDoctor } = useGetSchedule();
 
   const [modalSchedule, setModalSchedule] = useState(false);
   const [modalSuccess, setModalSuccess] = useState(false);
@@ -46,8 +44,6 @@ const Card = ({
   const [selectedSession, setSelectedSession] = useState("");
   const keluhan = getTempRegistration();
 
-  const [scheduleDoctor, setScheduleDoctor] = useState([]);
-
   const createRegis = useCreateRegistration();
 
   const { mutate: updateSchedule } = useUpdateSchedule();
@@ -56,11 +52,22 @@ const Card = ({
   const today = dayjs();
   const disabledDate = today.add(7, "day");
 
+  const filteredSchedule = useMemo(() => {
+    return (
+      scheduleDoctor?.filter(
+        (schedule) => schedule.dokter_umum.id === doctorData.id
+      ) || []
+    );
+  }, [scheduleDoctor, doctorData.id]);
+  console.log("filtered", filteredSchedule);
+
   const handleRegistration = () => {
     if (selectedSession == "") {
       alert("Mohon pilih sesi terlebih dahulu");
     } else {
-      const getDay = scheduleDoctor.filter((data) => dayName == data.hari.hari);
+      const getDay = filteredSchedule.filter(
+        (data) => dayName == data.hari.hari
+      );
 
       if (!getDay) {
         console.error(`Jadwal hari ${dayName} tidak ditemukan.`);
@@ -125,42 +132,15 @@ const Card = ({
     }
   };
 
-  console.log(categories);
-
-  console.log(scheduleDoctor);
-
   const ScheduleDisplay = () => {
-    useEffect(() => {
-      const fetchSchedule = () => {
-        if (categories === "Dokter Umum") {
-          const filteredSchedule = getScheduleDoctor?.filter(
-            (data) => data.dokter_umum.id === doctorData.id
-          );
-          setScheduleDoctor(filteredSchedule);
-        } else if (categories !== "Dokter Umum") {
-          console.log("masuk sini");
-          const filteredSchedule = getScheduleDoctor?.filter(
-            (data) => data.dokter_spesialis.id === doctorData.id
-          );
-          setScheduleDoctor(filteredSchedule);
-        }
-      };
-      fetchSchedule();
-    }, [categories, doctorData, getScheduleDoctor]);
-    const scheduleByDay = {};
+    const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-    scheduleDoctor?.forEach((schedule) => {
-      const day = schedule.hari.hari;
-      if (!scheduleByDay[day]) {
-        scheduleByDay[day] = [];
-      }
-      scheduleByDay[day].push(schedule);
-    });
     return (
       <div className="mt-[-20px]">
-        {hari.map((dayName) => {
-          const daySchedules = scheduleByDay[dayName];
-          if (!daySchedules || daySchedules.length === 0) return null;
+        {days.map((dayName) => {
+          const daySchedules = filteredSchedule.filter(
+            (schedule) => schedule.hari.hari === dayName
+          );
 
           return (
             <div key={dayName} className="mb-4">
@@ -168,14 +148,18 @@ const Card = ({
                 <p className="font-semibold underline">{dayName}</p>
               </div>
 
-              {daySchedules.map((schedule, index) => (
-                <div key={`${dayName}-${index}`} className="flex gap-[5px]">
-                  <p className="font-semibold">Sesi {index + 1}:</p>
-                  <p>
-                    {schedule.jam_mulai} - {schedule.jam_selesai}
-                  </p>
-                </div>
-              ))}
+              {daySchedules.length > 0 ? (
+                daySchedules.map((schedule, index) => (
+                  <div key={`${dayName}-${index}`} className="flex gap-[5px]">
+                    <p className="font-semibold">Sesi {index + 1}:</p>
+                    <p>
+                      {schedule.jam_mulai} - {schedule.jam_selesai}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="italic text-red-600">Sesi tidak tersedia</p>
+              )}
             </div>
           );
         })}
@@ -184,30 +168,12 @@ const Card = ({
   };
 
   const SessionComponent = () => {
-    useEffect(() => {
-      const fetchSchedule = () => {
-        if (!doctorData?.id || !getScheduleDoctor) return;
+    const getScheduleDay = filteredSchedule.filter(
+      (data) => dayName == data.hari.hari
+    );
 
-        const filteredSchedule = getScheduleDoctor.filter((data) =>
-          categories === "Dokter Umum"
-            ? data.dokter_umum?.id === doctorData.id
-            : data.dokter_spesialis?.id === doctorData.id
-        );
-
-        // Only update if the schedule actually changed
-        if (
-          JSON.stringify(filteredSchedule) !== JSON.stringify(scheduleDoctor)
-        ) {
-          setScheduleDoctor(filteredSchedule);
-        }
-      };
-
-      fetchSchedule();
-    }, [categories, doctorData?.id, getScheduleDoctor]); // More specific dependencies
-
-    const getDay = scheduleDoctor.filter((data) => dayName == data.hari.hari);
-
-    console.log(getDay);
+    // console.log("getday", getScheduleDay);
+    // console.log(selectedSession);
 
     return (
       <div>
@@ -217,8 +183,8 @@ const Card = ({
             value={selectedSession}
             onChange={(event) => setSelectedSession(event?.target.value)}
           >
-            {getDay?.length > 0 ? (
-              getDay.map((sessionData) => (
+            {getScheduleDay?.length > 0 ? (
+              getScheduleDay.map((sessionData) => (
                 <MenuItem key={sessionData.id} value={sessionData.jam_mulai}>
                   {sessionData.jam_mulai} - {sessionData.jam_selesai}
                 </MenuItem>

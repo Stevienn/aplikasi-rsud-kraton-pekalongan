@@ -28,23 +28,13 @@ const RekapMedis = () => {
     fetchUserData();
   }, []);
 
-  const { data: doctor, isLoading: isLoadingDoctor } = useGetDoctorById(
-    doctorData?.user.id,
-    {
-      enabled: !!doctorData && !doctorData.user.spesialization,
-    }
-  );
+  const {
+    data: doctor,
+    isLoading,
+    refetch,
+  } = useGetDoctorById(doctorData?.user.id);
 
-  const { data: doctorSpc, isLoading: isLoadingDoctorSpc } =
-    useGetSpecialistDoctorsById(doctorData?.user.id, {
-      enabled: !!doctorData && !!doctorData.user.spesialization,
-    });
-
-  const finalDoctor = doctorData?.user.spesialization ? doctorSpc : doctor;
-
-  const loading = doctorData === null || isLoadingDoctor || isLoadingDoctorSpc;
-
-  if (loading)
+  if (isLoading)
     return (
       <div>
         <AdminHeader
@@ -68,7 +58,6 @@ const RekapMedis = () => {
       </div>
     );
 
-  console.log("Final doctor data:", finalDoctor);
   return (
     <div>
       <AdminHeader
@@ -78,8 +67,8 @@ const RekapMedis = () => {
       />
       <RekapMedisComponent
         id={doctorData.user.id}
-        specialization={doctorData.user.spesialization}
-        doctor={finalDoctor}
+        specialization={doctor?.spesialisasi_dokter.nama_spesialisasi}
+        doctor={doctor}
       />
       <Footer isFull />
     </div>

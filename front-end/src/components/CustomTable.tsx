@@ -111,9 +111,7 @@ const CustomTable = ({
                               alt="icon_action"
                               width={21}
                               height={21}
-                              onClick={() =>
-                                handleAction(row.noBPJS, row.keluhan)
-                              }
+                              onClick={() => handleAction(row.noBPJS)}
                               className="cursor-pointer"
                             />
                           )}

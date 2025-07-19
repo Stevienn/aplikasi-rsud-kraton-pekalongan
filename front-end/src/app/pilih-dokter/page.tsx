@@ -4,15 +4,24 @@ import { getUser } from "@/api/user";
 import Card from "@/components/Card";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { IUserData } from "@/interface/patientInterface";
 import { useGetDoctors, useGetSpecialistDoctors } from "@/hooks/api/useDoctor";
 import { useGetScheduleById } from "@/hooks/api/useSchedule";
 
 const PilihDokter = () => {
   const [userData, setUserData] = useState<IUserData | null>(null);
-  const { data: doctorUmum } = useGetDoctors();
-  const { data: doctorSpesialis } = useGetSpecialistDoctors();
+  const { data: doctors } = useGetDoctors();
+
+  const doctorUmum = useMemo(
+    () => doctors?.filter((doctor) => doctor.spesialisasi_dokter.id === 2),
+    [doctors]
+  );
+
+  const doctorSpesialis = useMemo(
+    () => doctors?.filter((doctor) => doctor.spesialisasi_dokter.id !== 2),
+    [doctors]
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -46,7 +55,7 @@ const PilihDokter = () => {
           <Card
             userData={userData}
             doctorData={doctor}
-            categories={doctor.spesialization}
+            categories={doctor.spesialisasi_dokter.nama_spesialisasi}
             customCategoryClass="max-w-[140px]"
           />
         ))}

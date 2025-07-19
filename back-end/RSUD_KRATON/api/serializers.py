@@ -7,7 +7,7 @@ class SpesialisasiSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DokterSerializer(serializers.ModelSerializer):
-    # spesialisasi = SpesialisasiSerializer(read_only=True, source='spesialisasi_dokter')
+    spesialisasi_dokter = SpesialisasiSerializer(read_only=True)
     # spesialisasi_id = serializers.PrimaryKeyRelatedField(
     #       queryset = Spesialisasi.objects.all(), source='spesialisasi', write_only=True
     # )
@@ -43,6 +43,7 @@ class PasienSerializer(serializers.ModelSerializer):
     input_formats=["%d-%m-%Y"]
 )
     rekap_medis = HistorySerializer(many=True, read_only=True)
+    rekap_medis_ids = serializers.PrimaryKeyRelatedField(queryset=History.objects.all(), write_only=True, source='rekap_medis', many=True, required=False, allow_null=True)
     class Meta: 
         model = Pasien
         fields = '__all__'

@@ -30,28 +30,11 @@ const PortalDokter = () => {
 
   const {
     data: doctor,
-    isLoading: isLoadingDoctor,
-    refetch: refetchUmum,
-  } = useGetDoctorById(doctorData?.user.id, {
-    enabled: !!doctorData && !doctorData.user.spesialization,
-  });
+    isLoading,
+    refetch,
+  } = useGetDoctorById(doctorData?.user.id);
 
-  const {
-    data: doctorSpc,
-    isLoading: isLoadingDoctorSpc,
-    refetch: refetchSpc,
-  } = useGetSpecialistDoctorsById(doctorData?.user.id, {
-    enabled: !!doctorData && !!doctorData.user.spesialization,
-  });
-
-  const finalDoctor = doctorData?.user.spesialization ? doctorSpc : doctor;
-  const finalRefetch = doctorData?.user.spesialization
-    ? refetchSpc
-    : refetchUmum;
-
-  const loading = doctorData === null || isLoadingDoctor || isLoadingDoctorSpc;
-
-  if (loading)
+  if (isLoading)
     return (
       <div>
         <AdminHeader
@@ -82,12 +65,8 @@ const PortalDokter = () => {
         image={doctorData.user.image_dokter}
         linkName1="Rekap Medis"
       />
-      <PortalDoctorComponent
-        doctorData={doctorData?.user}
-        doctor={finalDoctor}
-        refetchDoctor={finalRefetch}
-      />
-      ~
+      <PortalDoctorComponent doctor={doctor} refetchDoctor={refetch} />
+
       <Footer isFull />
     </div>
   );
