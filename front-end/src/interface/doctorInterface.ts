@@ -32,4 +32,4 @@ interface IUserDoctor {
   user: IDoctor;
 }
 
-export type { ISchedule, IDoctor, ISession, IUserDoctor, IDoctorSpc };
+export type { ISchedule, IDoctor, ISession, IUserDoctor };
