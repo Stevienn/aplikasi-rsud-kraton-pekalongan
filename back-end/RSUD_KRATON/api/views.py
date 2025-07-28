@@ -157,7 +157,7 @@ class LaporanDokterView(APIView):
                 ).count()
                 
                 if jumlah_pasien  > 0:
-                    spesialisasi_nama = dokter.spesialisasi.nama_spesialisasi if dokter.spesialisasi else "-"
+                    spesialisasi_nama = dokter.spesialisasi_dokter.nama_spesialisasi if dokter.spesialisasi_dokter else "-"
                     dokter_data.append({
                         'id': dokter.id,
                         'nama_dokter': dokter.nama_dokter,
